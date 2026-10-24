@@ -26,7 +26,7 @@ export class UIController {
     this.btnPlay = document.getElementById('btn-play');
     this.btnOpenLeaderboard = document.getElementById('btn-leaderboard');
     this.btnOpenSkins = document.getElementById('btn-skins');
-    this.btnSettings = document.getElementById('btn-settings');
+    this.btnSound = document.getElementById('btn-sound') || document.getElementById('btn-settings');
 
     // HUD Elements
     this.hudAvatarContainer = document.getElementById('hud-avatar-container');
@@ -73,15 +73,17 @@ export class UIController {
       /* storage unavailable in some webviews */
     }
     this.syncSoundButton();
-    this.btnSettings.addEventListener('click', () => {
-      sound.muted = !sound.muted;
-      try {
-        localStorage.setItem(SOUND_PREF_KEY, sound.muted ? '1' : '0');
-      } catch (e) {
-        /* ignore */
-      }
-      this.syncSoundButton();
-    });
+    if (this.btnSound) {
+      this.btnSound.addEventListener('click', () => {
+        sound.muted = !sound.muted;
+        try {
+          localStorage.setItem(SOUND_PREF_KEY, sound.muted ? '1' : '0');
+        } catch (e) {
+          /* ignore */
+        }
+        this.syncSoundButton();
+      });
+    }
 
     // Play CTA (Starts Solid board shuffle & peek)
     this.btnPlay.addEventListener('click', () => {
@@ -118,11 +120,12 @@ export class UIController {
   }
 
   syncSoundButton() {
-    this.btnSettings.classList.toggle('is-muted', sound.muted);
-    this.btnSettings.setAttribute('aria-pressed', String(sound.muted));
-    this.btnSettings.setAttribute('aria-label', sound.muted ? 'Sound off — tap to turn on' : 'Sound on — tap to mute');
+    if (!this.btnSound) return;
+    this.btnSound.classList.toggle('is-muted', sound.muted);
+    this.btnSound.setAttribute('aria-pressed', String(sound.muted));
+    this.btnSound.setAttribute('aria-label', sound.muted ? 'Sound muted — tap to unmute' : 'Sound active — tap to mute');
     const badge = document.getElementById('sound-state-badge');
-    if (badge) badge.textContent = sound.muted ? 'OFF' : 'ON';
+    if (badge) badge.textContent = sound.muted ? 'MUTED' : 'ON';
   }
 
   wireGameCallbacks() {

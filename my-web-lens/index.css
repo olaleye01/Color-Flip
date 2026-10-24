@@ -353,23 +353,42 @@ button:focus-visible {
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .btn-icon-round:hover {
   border-color: var(--panel-border);
-}
-
-.btn-icon-round:hover .icon-gear {
-  transform: rotate(60deg);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4), 0 0 16px rgba(61, 139, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 .btn-icon-round:active {
   transform: scale(0.92);
 }
 
-.icon-gear {
-  transition: transform 0.4s cubic-bezier(0.3, 1.4, 0.5, 1);
+.icon-sound {
+  display: block;
+  transition: transform 0.25s cubic-bezier(0.2, 1.3, 0.4, 1);
+}
+
+.btn-icon-round .icon-sound-off {
+  display: none;
+}
+
+.btn-icon-round.is-muted .icon-sound-on {
+  display: none;
+}
+
+.btn-icon-round.is-muted .icon-sound-off {
+  display: block;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.btn-icon-round:hover:not(.is-muted) .icon-sound-on {
+  transform: scale(1.12);
+}
+
+.btn-icon-round:hover.is-muted .icon-sound-off {
+  transform: scale(1.08);
 }
 
 .sound-badge {
