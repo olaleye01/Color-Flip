@@ -3,12 +3,16 @@
 import { EMBLEM_SKINS } from './palette.js';
 import { getSaveState, getBitmojiUrl, isCapabilitySupported, showNativeLeaderboard } from './snapchat.js';
 import { GAME_STATES } from './game.js';
+import { sound } from './audio.js';
+
+const SOUND_PREF_KEY = 'colorflip_muted';
 
 export class UIController {
   constructor(gameEngine) {
     this.game = gameEngine;
 
     // Cache DOM Elements
+    this.stage = document.getElementById('lens-stage');
     this.overlay = document.getElementById('ui-overlay');
     this.lobbyScreen = document.getElementById('lobby-screen');
     this.hudScreen = document.getElementById('hud-screen');
@@ -22,6 +26,7 @@ export class UIController {
     this.btnPlay = document.getElementById('btn-play');
     this.btnOpenLeaderboard = document.getElementById('btn-leaderboard');
     this.btnOpenSkins = document.getElementById('btn-skins');
+    this.btnSettings = document.getElementById('btn-settings');
 
     // HUD Elements
     this.hudAvatarContainer = document.getElementById('hud-avatar-container');
@@ -61,6 +66,23 @@ export class UIController {
   }
 
   wireEvents() {
+    // Sound toggle (gear button) — restore saved preference
+    try {
+      sound.muted = localStorage.getItem(SOUND_PREF_KEY) === '1';
+    } catch (e) {
+      /* storage unavailable in some webviews */
+    }
+    this.syncSoundButton();
+    this.btnSettings.addEventListener('click', () => {
+      sound.muted = !sound.muted;
+      try {
+        localStorage.setItem(SOUND_PREF_KEY, sound.muted ? '1' : '0');
+      } catch (e) {
+        /* ignore */
+      }
+      this.syncSoundButton();
+    });
+
     // Play CTA (Starts Solid board shuffle & peek)
     this.btnPlay.addEventListener('click', () => {
       this.game.startRound();
@@ -93,6 +115,14 @@ export class UIController {
       this.closeFlexCard();
       this.game.returnToLobby();
     });
+  }
+
+  syncSoundButton() {
+    this.btnSettings.classList.toggle('is-muted', sound.muted);
+    this.btnSettings.setAttribute('aria-pressed', String(sound.muted));
+    this.btnSettings.setAttribute('aria-label', sound.muted ? 'Sound off — tap to turn on' : 'Sound on — tap to mute');
+    const badge = document.getElementById('sound-state-badge');
+    if (badge) badge.textContent = sound.muted ? 'OFF' : 'ON';
   }
 
   wireGameCallbacks() {
@@ -184,6 +214,10 @@ export class UIController {
   }
 
   renderState(state) {
+    if (this.stage) {
+      this.stage.classList.toggle('in-game', state !== GAME_STATES.LOBBY);
+    }
+
     if (state === GAME_STATES.LOBBY) {
       this.lobbyScreen.classList.remove('hidden');
       this.hudScreen.classList.add('hidden');

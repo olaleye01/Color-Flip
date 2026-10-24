@@ -4,13 +4,14 @@
 export const GAME_MODE = {
   id: 1,
   name: 'Solid',
-  subtitle: 'Studio Matte',
+  subtitle: 'Neon Arcade',
   multiplier: 1.0,
-  boardBg: '#F3F4F6',
-  boardBorder: '#E5E7EB',
-  trayColor: '#FFFFFF',
-  tileEdgeColor: '#E2E8F0',
-  lightEnv: 'neutral-studio',
+  boardBg: 'transparent', // CSS stage backdrop shows through the WebGL canvas
+  boardBorder: '#3D8BFF',
+  trayColor: '#141B42',
+  trayRimColor: '#3D8BFF',
+  tileEdgeColor: '#101634',
+  lightEnv: 'neon-arcade',
 };
 
 export const LEVELS = [GAME_MODE];

@@ -9,20 +9,37 @@
     <title>Color Flip - 3D Snapchat Web Lens</title>
     <meta name="description" content="A fast-paced 3D visual-memory color matching game for Snapchat Web Lens." />
 
-    <!-- Google Fonts: Montserrat (Black/Bold), Rubik, Inter -->
+    <!-- Google Fonts: Lilita One (logo), Montserrat (Black/Bold), Rubik, Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Montserrat:wght@700;800;900&family=Rubik:wght@600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Lilita+One&family=Montserrat:wght@700;800;900&family=Rubik:wght@600;700;800&display=swap"
       rel="stylesheet"
     />
 
-    <script type="module" crossorigin src="./assets/index-zFL2D3Ws.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-D8ctC_bO.css">
+    <script type="module" crossorigin src="./assets/index-CL9PGsB-.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-CLx9xzYk.css">
   </head>
   <body>
     <!-- App Container (9:16 Vertical Safe Ratio on Mobile, Centered Mobile Stage on Desktop) -->
     <div id="lens-stage">
+      <!-- Neon Arcade Backdrop (behind transparent WebGL canvas) -->
+      <div class="stage-backdrop" aria-hidden="true">
+        <div class="stage-spotlight"></div>
+        <span class="bokeh b1"></span>
+        <span class="bokeh b2"></span>
+        <span class="bokeh b3"></span>
+        <span class="bokeh b4"></span>
+        <span class="bokeh b5"></span>
+        <span class="bokeh b6"></span>
+        <div class="board-glow"></div>
+        <span class="float-tile ft-yellow"></span>
+        <span class="float-tile ft-pink"></span>
+        <span class="float-tile ft-blue"></span>
+        <span class="float-tile ft-purple"></span>
+        <span class="float-tile ft-gold"></span>
+      </div>
+
       <!-- 3D PlayCanvas WebGL Canvas -->
       <canvas id="application-canvas"></canvas>
 
@@ -33,26 +50,54 @@
 
         <!-- SCREEN 1: PRE-GAME LOBBY & LEVEL SELECTOR -->
         <section id="lobby-screen" class="screen-view">
-          <!-- Personal Best Header Pill -->
+          <!-- Personal Best Header Pill + Settings -->
           <div class="lobby-header-row">
             <div class="user-best-pill">
-              <img
-                id="lobby-avatar"
-                class="avatar-thumb"
-                src="data:image/png;base64,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"
-                alt="Player Avatar"
-                onerror="this.src='./assets/avatar_default.png'"
-              />
+              <div class="avatar-ring">
+                <img
+                  id="lobby-avatar"
+                  class="avatar-thumb"
+                  src="data:image/png;base64,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"
+                  alt="Player Avatar"
+                  onerror="this.src='./assets/avatar_default.png'"
+                />
+              </div>
               <div class="best-text-group">
                 <span class="best-label">HIGH SCORE</span>
                 <span id="lobby-high-score" class="best-score">0</span>
               </div>
             </div>
+
+            <button id="btn-settings" class="btn-icon-round" aria-label="Toggle sound" aria-pressed="false">
+              <svg class="icon-gear" viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                <path d="M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.49.49 0 00.12-.61l-1.92-3.32a.49.49 0 00-.59-.22l-2.39.96a7.03 7.03 0 00-1.62-.94l-.36-2.54A.48.48 0 0013.9 2h-3.84a.48.48 0 00-.48.41l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96a.49.49 0 00-.59.22L2.7 8.47a.48.48 0 00.12.61l2.03 1.58c-.04.31-.07.63-.07.94s.02.63.06.94l-2.03 1.58a.49.49 0 00-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.25.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.48.48 0 00-.12-.61l-2.01-1.58zM12 15.6A3.6 3.6 0 1112 8.4a3.6 3.6 0 010 7.2z" />
+              </svg>
+              <span id="sound-state-badge" class="sound-badge" aria-hidden="true">ON</span>
+            </button>
           </div>
 
           <!-- Title Logo -->
           <div class="title-container">
-            <h1 class="game-logo">COLOR FLIP</h1>
+            <h1 class="game-logo" aria-label="Color Flip">
+              <span class="logo-spark s1"></span>
+              <span class="logo-spark s2"></span>
+              <span class="logo-spark s3"></span>
+              <span class="logo-spark s4"></span>
+              <span class="logo-word logo-color" aria-hidden="true">COLOR</span>
+              <span class="logo-flip-row" aria-hidden="true">
+                <svg class="flip-arrow arrow-left" viewBox="0 0 40 60" width="28" height="44">
+                  <path d="M30 6 C10 14 8 42 26 54" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" />
+                  <path d="M18 4 L34 4 L26 18 Z" fill="currentColor" transform="rotate(-20 26 8)" />
+                </svg>
+                <span class="logo-word logo-flip">
+                  <span class="fl f">F</span><span class="fl l">L</span><span class="fl i">I</span><span class="fl p">P</span>
+                </span>
+                <svg class="flip-arrow arrow-right" viewBox="0 0 40 60" width="28" height="44">
+                  <path d="M10 54 C30 46 32 18 14 6" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" />
+                  <path d="M6 56 L22 56 L14 42 Z" fill="currentColor" transform="rotate(-20 14 52)" />
+                </svg>
+              </span>
+            </h1>
             <p class="tagline">3D VISUAL MEMORY</p>
           </div>
 
@@ -62,27 +107,43 @@
           <!-- Bottom Action Zone -->
           <div class="lobby-actions-bottom">
             <!-- Primary Play CTA -->
-            <button id="btn-play" class="btn-primary-cta" aria-label="Start Game">
-              <span>P L A Y</span>
-              <svg class="icon-play" viewBox="0 0 24 24" width="24" height="24">
-                <path fill="currentColor" d="M8 5v14l11-7z" />
-              </svg>
-            </button>
+            <div class="play-cta-wrap">
+              <span class="cta-tick t-left-a"></span>
+              <span class="cta-tick t-left-b"></span>
+              <button id="btn-play" class="btn-primary-cta btn-play-hero" aria-label="Start Game">
+                <svg class="icon-play" viewBox="0 0 24 24" width="30" height="30">
+                  <path fill="currentColor" d="M7 4.5v15a1 1 0 001.52.85l12-7.5a1 1 0 000-1.7l-12-7.5A1 1 0 007 4.5z" />
+                </svg>
+                <span>PLAY</span>
+              </button>
+              <span class="cta-tick t-right-a"></span>
+              <span class="cta-tick t-right-b"></span>
+            </div>
 
             <!-- Secondary Actions -->
             <div class="secondary-btn-row">
               <button id="btn-leaderboard" class="btn-secondary-pill" aria-label="View Snapchat Leaderboard">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
                 <span>LEADERBOARD</span>
+                <svg class="chev" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
               </button>
 
               <button id="btn-skins" class="btn-secondary-pill" aria-label="Customize Tile Back Skins">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M7 21a4 4 0 01-4-4 8.001 8.001 0 018.7-7.9A4.002 4.002 0 0116 11a4 4 0 01-.8 7.9A4.004 4.004 0 0111 21H7z" />
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 3a9 9 0 000 18c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16a5 5 0 005-5c0-4.42-4.03-8-9-8z" />
+                  <circle cx="7.5" cy="11.5" r="1.2" fill="currentColor" stroke="none" />
+                  <circle cx="10" cy="7.5" r="1.2" fill="currentColor" stroke="none" />
+                  <circle cx="14.5" cy="7.5" r="1.2" fill="currentColor" stroke="none" />
+                  <circle cx="17" cy="11" r="1.2" fill="currentColor" stroke="none" />
                 </svg>
                 <span>TILE SKIN</span>
+                <svg class="chev" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
               </button>
             </div>
           </div>

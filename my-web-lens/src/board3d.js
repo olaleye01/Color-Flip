@@ -1,7 +1,7 @@
 // src/board3d.js
 // PlayCanvas 3D Board & Tile Architecture for Color Flip
 import * as pc from 'playcanvas';
-import { getSwatchTexture, getEmblemTexture } from './textures.js';
+import { getSwatchTexture, getEmblemTexture, shadeHex } from './textures.js';
 import { LEVELS, SOLID_SWATCHES } from './palette.js';
 
 export class Board3D {
@@ -18,11 +18,14 @@ export class Board3D {
     this.bitmojiImage = null;
     this.isInputLocked = true;
     this.onTileTapped = null;
+    this.tintBodies = true; // Lobby showcase: tile sides take the face colour
+    this.idleTime = 0;
+    this.boardBaseY = 0.15;
 
     // Camera target angles tuned for 9:16 portrait mobile
     this.cameraPresets = {
-      preview: { pos: new pc.Vec3(0, 4.8, 3.6), rot: new pc.Vec3(-52, 0, 0) },
-      play: { pos: new pc.Vec3(0, 6.4, 0.4), rot: new pc.Vec3(-86, 0, 0) },
+      preview: { pos: new pc.Vec3(0, 6.3, 4.6), rot: new pc.Vec3(-53, 0, 0) },
+      play: { pos: new pc.Vec3(0, 7.4, 0.45), rot: new pc.Vec3(-86, 0, 0) },
     };
     this.currentCamMode = 'preview';
 
@@ -32,6 +35,8 @@ export class Board3D {
   initEngine() {
     this.app = new pc.Application(this.canvas, {
       elementInput: new pc.ElementInput(this.canvas),
+      // Transparent drawing buffer so the CSS neon backdrop shows behind the board
+      graphicsDeviceOptions: { alpha: true, antialias: true },
     });
 
     // Expose devtools hook
@@ -67,7 +72,7 @@ export class Board3D {
     // 1. Camera with horizontal FOV for consistent mobile framing
     this.cameraEntity = new pc.Entity('MainCamera');
     this.cameraEntity.addComponent('camera', {
-      clearColor: new pc.Color(0.08, 0.09, 0.12),
+      clearColor: new pc.Color(0, 0, 0, 0),
       horizontalFov: true,
       fov: 36,
       nearClip: 0.1,
@@ -76,42 +81,73 @@ export class Board3D {
     this.setCameraPreset('preview', 0); // instant
     root.addChild(this.cameraEntity);
 
-    // Ambient scene lighting
-    this.app.scene.ambientColor = new pc.Color(0.65, 0.65, 0.7);
+    // Ambient scene lighting (cool arcade navy)
+    this.app.scene.ambientColor = new pc.Color(0.42, 0.45, 0.62);
 
     // 2. Directional Key Light
     this.lightEntity = new pc.Entity('KeyLight');
     this.lightEntity.addComponent('light', {
       type: 'directional',
       color: new pc.Color(1, 1, 1),
-      intensity: 1.3,
+      intensity: 1.35,
       castShadows: false,
     });
-    this.lightEntity.setEulerAngles(45, 30, 0);
+    this.lightEntity.setEulerAngles(50, 20, 0);
     root.addChild(this.lightEntity);
 
-    // 3. Fill Light (Soft upward bounce)
+    // 3. Blue rim light from behind for neon edge highlights
     const fillLight = new pc.Entity('FillLight');
     fillLight.addComponent('light', {
       type: 'directional',
-      color: new pc.Color(0.8, 0.85, 1.0),
-      intensity: 0.5,
+      color: new pc.Color(0.35, 0.55, 1.0),
+      intensity: 0.9,
       castShadows: false,
     });
-    fillLight.setEulerAngles(-60, -120, 0);
+    fillLight.setEulerAngles(-60, 160, 0);
     root.addChild(fillLight);
 
     // 4. Board Hierarchy Root
     this.boardEntity = new pc.Entity('BoardRoot');
-    this.boardEntity.setLocalPosition(0, 0.15, 0);
+    this.boardEntity.setLocalPosition(0, this.boardBaseY, 0);
     root.addChild(this.boardEntity);
 
-    // 5. Tray Base (pedestal underneath tiles)
+    // 5. Tray Base (dark navy glass pedestal underneath tiles)
     this.trayEntity = new pc.Entity('TrayBase');
     this.trayEntity.addComponent('render', { type: 'box' });
-    this.trayEntity.setLocalScale(3.9, 0.16, 3.9);
-    this.trayEntity.setLocalPosition(0, -0.11, 0);
+    this.trayEntity.setLocalScale(3.92, 0.2, 3.92);
+    this.trayEntity.setLocalPosition(0, -0.2, 0);
     this.boardEntity.addChild(this.trayEntity);
+
+    // 5b. Glowing neon rim (slightly larger slab under the tray + edge strips)
+    this.rimMat = new pc.StandardMaterial();
+    this.rimMat.diffuse = new pc.Color(0.05, 0.1, 0.25);
+    this.rimMat.emissive = new pc.Color(0.24, 0.55, 1.0);
+    this.rimMat.emissiveIntensity = 1.4;
+    this.rimMat.update();
+
+    const rimBase = new pc.Entity('TrayRim');
+    rimBase.addComponent('render', { type: 'box' });
+    rimBase.setLocalScale(4.06, 0.08, 4.06);
+    rimBase.setLocalPosition(0, -0.31, 0);
+    rimBase.render.meshInstances[0].material = this.rimMat;
+    this.boardEntity.addChild(rimBase);
+
+    const stripY = -0.095;
+    const half = 1.96;
+    const strips = [
+      { pos: [0, stripY, -half], scale: [3.96, 0.03, 0.04] },
+      { pos: [0, stripY, half], scale: [3.96, 0.03, 0.04] },
+      { pos: [-half, stripY, 0], scale: [0.04, 0.03, 3.96] },
+      { pos: [half, stripY, 0], scale: [0.04, 0.03, 3.96] },
+    ];
+    strips.forEach((s, i) => {
+      const strip = new pc.Entity(`RimStrip_${i}`);
+      strip.addComponent('render', { type: 'box' });
+      strip.setLocalPosition(...s.pos);
+      strip.setLocalScale(...s.scale);
+      strip.render.meshInstances[0].material = this.rimMat;
+      this.boardEntity.addChild(strip);
+    });
 
     // 6. Build 4x4 Tiles Grid (16 tiles)
     this.buildGrid();
@@ -149,44 +185,52 @@ export class Board3D {
     const tileRoot = new pc.Entity(`Tile_${index}`);
     tileRoot.setLocalPosition(x, 0, z);
 
-    // Main tile body box
+    // Main tile body box (inset so the rounded face texture hides its square corners)
     const body = new pc.Entity(`Body_${index}`);
     body.addComponent('render', { type: 'box' });
-    body.setLocalScale(size, 0.12, size);
+    body.setLocalScale(size * 0.9, 0.16, size * 0.9);
     tileRoot.addChild(body);
 
     // Emblem Face (Top: emblem when face-down at rotationX = 0)
     const emblemFace = new pc.Entity(`EmblemFace_${index}`);
     emblemFace.addComponent('render', { type: 'plane' });
-    emblemFace.setLocalScale(size * 0.94, 1, size * 0.94);
-    emblemFace.setLocalPosition(0, 0.062, 0);
+    emblemFace.setLocalScale(size, 1, size);
+    emblemFace.setLocalPosition(0, 0.082, 0);
     emblemFace.setLocalEulerAngles(0, 0, 0);
     tileRoot.addChild(emblemFace);
 
     // Swatch Face (Bottom when rotationX = 0, Top when flipped to rotationX = 180)
     const swatchFace = new pc.Entity(`SwatchFace_${index}`);
     swatchFace.addComponent('render', { type: 'plane' });
-    swatchFace.setLocalScale(size * 0.94, 1, size * 0.94);
-    swatchFace.setLocalPosition(0, -0.062, 0);
-    swatchFace.setLocalEulerAngles(180, 0, 0);
+    swatchFace.setLocalScale(size, 1, size);
+    swatchFace.setLocalPosition(0, -0.082, 0);
+    swatchFace.setLocalEulerAngles(180, 180, 0);
     tileRoot.addChild(swatchFace);
 
-    // Material holders
+    // Material holders (alphaTest cuts the transparent rounded corners)
     const swatchMat = new pc.StandardMaterial();
     swatchMat.useMetalness = false;
     swatchMat.diffuse = new pc.Color(1, 1, 1);
-    swatchMat.gloss = 0.85;
+    swatchMat.emissive = new pc.Color(1, 1, 1);
+    swatchMat.emissiveIntensity = 0.45;
+    swatchMat.specular = new pc.Color(0.5, 0.5, 0.5);
+    swatchMat.gloss = 0.88;
+    swatchMat.alphaTest = 0.5;
     swatchFace.render.meshInstances[0].material = swatchMat;
 
     const emblemMat = new pc.StandardMaterial();
     emblemMat.useMetalness = false;
     emblemMat.diffuse = new pc.Color(1, 1, 1);
-    emblemMat.gloss = 0.8;
+    emblemMat.emissive = new pc.Color(1, 1, 1);
+    emblemMat.emissiveIntensity = 0.3;
+    emblemMat.gloss = 0.85;
+    emblemMat.alphaTest = 0.5;
     emblemFace.render.meshInstances[0].material = emblemMat;
 
     const bodyMat = new pc.StandardMaterial();
     bodyMat.useMetalness = false;
-    bodyMat.diffuse = new pc.Color(0.85, 0.88, 0.92);
+    bodyMat.diffuse = new pc.Color(0.06, 0.08, 0.2);
+    bodyMat.gloss = 0.6;
     body.render.meshInstances[0].material = bodyMat;
 
     return {
@@ -296,37 +340,48 @@ export class Board3D {
     this.activeLevelId = 1;
     const lvl = LEVELS[0];
 
-    // 1. Camera Clear Color & Ambient Studio Lighting
-    const clearHex = lvl.boardBg;
-    const clearCol = new pc.Color().fromString(clearHex);
-    this.cameraEntity.camera.clearColor = clearCol;
+    // 1. Transparent clear so the CSS neon stage backdrop is visible
+    this.cameraEntity.camera.clearColor = new pc.Color(0, 0, 0, 0);
 
-    this.app.scene.ambientColor = new pc.Color(0.7, 0.7, 0.72);
+    this.app.scene.ambientColor = new pc.Color(0.42, 0.45, 0.62);
     this.lightEntity.light.color = new pc.Color(1, 1, 1);
-    this.lightEntity.light.intensity = 1.3;
+    this.lightEntity.light.intensity = 1.35;
 
-    // 2. Tray material & lighting (Minimalist studio matte tray)
+    // 2. Tray material (glossy dark navy glass)
     const trayMat = this.trayEntity.render.meshInstances[0].material;
     trayMat.diffuse = new pc.Color().fromString(lvl.trayColor);
     trayMat.useMetalness = true;
-    trayMat.metalness = 0.2;
-    trayMat.gloss = 0.8;
+    trayMat.metalness = 0.35;
+    trayMat.gloss = 0.82;
     trayMat.update();
 
-    // 3. Tile body edge styling
-    const edgeCol = new pc.Color().fromString(lvl.tileEdgeColor);
-    this.tiles.forEach((t) => {
-      t.bodyMat.diffuse = edgeCol;
-      t.bodyMat.update();
-    });
+    // 3. Rim glow colour
+    if (this.rimMat && lvl.trayRimColor) {
+      this.rimMat.emissive = new pc.Color().fromString(lvl.trayRimColor);
+      this.rimMat.update();
+    }
 
-    // 4. Sample swatch preview in lobby using solid swatches
+    // 4. Lobby showcase: tinted tile sides + sample swatch preview
+    this.setLobbyTint(true);
     for (let i = 0; i < 16; i++) {
       this.setTileSwatch(i, SOLID_SWATCHES[i % SOLID_SWATCHES.length]);
     }
 
     // 5. Refresh tile back emblem
     this.applySkin(this.activeSkinId);
+  }
+
+  /**
+   * In the lobby the tile sides take a darker shade of the face colour (candy look).
+   * During play the sides must stay neutral so they never leak a hidden colour.
+   */
+  setLobbyTint(enabled) {
+    this.tintBodies = enabled;
+    const neutral = new pc.Color().fromString(LEVELS[0].tileEdgeColor);
+    this.tiles.forEach((t) => {
+      t.bodyMat.diffuse = enabled && t.swatch ? new pc.Color().fromString(shadeHex(t.swatch.colorA, -0.4)) : neutral;
+      t.bodyMat.update();
+    });
   }
 
   applySkin(skinId, bitmojiImg = null) {
@@ -337,6 +392,9 @@ export class Board3D {
 
     this.tiles.forEach((tile) => {
       tile.emblemMat.diffuseMap = emblemTex;
+      tile.emblemMat.emissiveMap = emblemTex;
+      tile.emblemMat.opacityMap = emblemTex;
+      tile.emblemMat.opacityMapChannel = 'a';
       tile.emblemMat.update();
     });
   }
@@ -348,7 +406,15 @@ export class Board3D {
     tile.swatch = swatch;
     const swatchTex = getSwatchTexture(this.app, swatch);
     tile.swatchMat.diffuseMap = swatchTex;
+    tile.swatchMat.emissiveMap = swatchTex;
+    tile.swatchMat.opacityMap = swatchTex;
+    tile.swatchMat.opacityMapChannel = 'a';
     tile.swatchMat.update();
+
+    if (this.tintBodies) {
+      tile.bodyMat.diffuse = new pc.Color().fromString(shadeHex(swatch.colorA, -0.4));
+      tile.bodyMat.update();
+    }
   }
 
   flipTile(index, faceUp) {
@@ -424,13 +490,23 @@ export class Board3D {
     if (!this.boardEntity) return;
     const vx = (Math.random() - 0.5) * intensity;
     const vz = (Math.random() - 0.5) * intensity;
-    this.boardEntity.setLocalPosition(vx, 0, vz);
+    this.boardEntity.setLocalPosition(vx, this.boardBaseY, vz);
     setTimeout(() => {
-      if (this.boardEntity) this.boardEntity.setLocalPosition(0, 0, 0);
+      if (this.boardEntity) this.boardEntity.setLocalPosition(0, this.boardBaseY, 0);
     }, 50);
   }
 
   onUpdate(dt) {
+    // 0. Gentle idle sway in the lobby preview; settle flat during play
+    this.idleTime += dt;
+    if (this.boardEntity) {
+      const cur = this.boardEntity.getLocalEulerAngles();
+      const targetY = this.currentCamMode === 'preview' ? Math.sin(this.idleTime * 0.6) * 4 : 0;
+      const targetX = this.currentCamMode === 'preview' ? Math.sin(this.idleTime * 0.45) * 1.5 : 0;
+      const k = Math.min(dt * 3, 1);
+      this.boardEntity.setLocalEulerAngles(pc.math.lerp(cur.x, targetX, k), pc.math.lerp(cur.y, targetY, k), 0);
+    }
+
     // 1. Camera smooth interpolation
     if (this.camTargetPos && this.camTransitionSpeed > 0) {
       const curPos = this.cameraEntity.getPosition();

@@ -94,6 +94,7 @@ export class GameEngine {
 
     // Switch camera to overhead play position
     this.board.setCameraPreset('play', 5.0);
+    this.board.setLobbyTint(false); // neutral tile sides so colours never leak
     this.board.isInputLocked = true;
 
     // Generate final 8-pair board layout from solid swatches
@@ -363,7 +364,7 @@ export class GameEngine {
 
     this.board.setCameraPreset('preview', 4.0);
     this.board.applyLevelStyle(1);
-    this.board.allFaceDown();
+    this.board.allFaceUp(); // showcase colours in the lobby
     this.setState(GAME_STATES.LOBBY);
   }
 }
