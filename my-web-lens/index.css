@@ -236,119 +236,12 @@ body {
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.85);
 }
 
-/* Level Header Card in Carousel */
-.carousel-card-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-.level-header-card {
-  width: 100%;
-  max-width: 340px;
-  padding: 12px 16px;
-  text-align: center;
-}
-
-.level-title {
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 16px;
-  letter-spacing: 0.06em;
-  color: var(--text-primary);
-}
-
-.level-subtitle {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  margin-top: 2px;
-}
-
-.mult-badge {
-  display: inline-block;
-  margin-top: 6px;
-  background: linear-gradient(135deg, rgba(0, 229, 255, 0.2), rgba(255, 0, 160, 0.2));
-  border: 1px solid var(--accent-cyan);
-  color: var(--accent-cyan);
-  font-size: 11px;
-  font-weight: 800;
-  padding: 3px 10px;
-  border-radius: 12px;
-  letter-spacing: 0.05em;
-}
-
-/* Carousel Nav Row */
-.carousel-nav-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-}
-
-.btn-arrow {
-  background: var(--pill-frosted);
-  border: 1px solid var(--pill-frosted-border);
-  color: var(--text-primary);
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: transform 0.15s, background-color 0.15s;
-}
-
-.btn-arrow:active {
-  transform: scale(0.9);
-  background: rgba(255, 255, 255, 0.25);
-}
-
-.pagination-dots {
-  display: flex;
-  gap: 8px;
-}
-
-.dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.25);
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.dot.active {
-  width: 22px;
-  border-radius: 6px;
-  background: var(--snap-yellow);
-  box-shadow: 0 0 10px rgba(255, 252, 0, 0.6);
-}
-
-.dot.locked-dot {
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
 /* Bottom Actions in Lobby */
 .lobby-actions-bottom {
   display: flex;
   flex-direction: column;
   gap: 10px;
   align-items: center;
-}
-
-.lock-notice {
-  font-size: 11px;
-  font-weight: 700;
-  color: #ff9100;
-  background: rgba(255, 145, 0, 0.15);
-  border: 1px solid rgba(255, 145, 0, 0.35);
-  padding: 5px 12px;
-  border-radius: 8px;
-  text-align: center;
 }
 
 /* Primary Snap Yellow CTA with 3D Lip Press */

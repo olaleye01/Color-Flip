@@ -1,6 +1,6 @@
 // src/ui.js
 // UI Controller for Color Flip (HTML/CSS Overlay Layer)
-import { LEVELS, EMBLEM_SKINS } from './palette.js';
+import { EMBLEM_SKINS } from './palette.js';
 import { getSaveState, getBitmojiUrl, isCapabilitySupported, showNativeLeaderboard } from './snapchat.js';
 import { GAME_STATES } from './game.js';
 
@@ -19,14 +19,7 @@ export class UIController {
     // Lobby Elements
     this.highScoreDisplay = document.getElementById('lobby-high-score');
     this.lobbyAvatar = document.getElementById('lobby-avatar');
-    this.levelTitle = document.getElementById('lobby-level-title');
-    this.levelSubtitle = document.getElementById('lobby-level-subtitle');
-    this.levelMultBadge = document.getElementById('lobby-mult-badge');
-    this.btnPrevLevel = document.getElementById('btn-prev-level');
-    this.btnNextLevel = document.getElementById('btn-next-level');
-    this.levelDotsContainer = document.getElementById('level-dots');
     this.btnPlay = document.getElementById('btn-play');
-    this.levelLockNotice = document.getElementById('level-lock-notice');
     this.btnOpenLeaderboard = document.getElementById('btn-leaderboard');
     this.btnOpenSkins = document.getElementById('btn-skins');
 
@@ -63,23 +56,14 @@ export class UIController {
     this.btnFlexLeaderboard = document.getElementById('btn-flex-leaderboard');
     this.btnFlexChangeLevel = document.getElementById('btn-flex-change-level');
 
-    this.currentCarouselIndex = 0; // 0 to 4
     this.wireEvents();
     this.wireGameCallbacks();
   }
 
   wireEvents() {
-    // Level Carousel Navigation
-    this.btnPrevLevel.addEventListener('click', () => this.navigateCarousel(-1));
-    this.btnNextLevel.addEventListener('click', () => this.navigateCarousel(1));
-
-    // Play CTA
+    // Play CTA (Starts Solid board shuffle & peek)
     this.btnPlay.addEventListener('click', () => {
-      const targetLevel = LEVELS[this.currentCarouselIndex];
-      if (this.game.isLevelUnlocked(targetLevel.id)) {
-        this.game.selectLevel(targetLevel.id);
-        this.game.startRound();
-      }
+      this.game.startRound();
     });
 
     // Quick Restart in HUD
@@ -163,71 +147,19 @@ export class UIController {
 
   refreshUserData() {
     const save = getSaveState();
-    const avatarUrl = getBitmojiUrl();
-
-    // High Score header pill
     this.highScoreDisplay.textContent = (save.highScore || 0).toLocaleString();
 
-    // Set Bitmoji Avatars with fallback safety
-    this.lobbyAvatar.src = avatarUrl;
-    this.hudAvatarImg.src = avatarUrl;
-    this.flexAvatar.src = avatarUrl;
+    const avatarUrl = getBitmojiUrl();
+    if (avatarUrl) {
+      this.lobbyAvatar.src = avatarUrl;
+      this.hudAvatarImg.src = avatarUrl;
+      this.flexAvatar.src = avatarUrl;
+    }
 
-    // Leaderboard button visibility
     if (!isCapabilitySupported('leaderboards')) {
       this.btnOpenLeaderboard.classList.add('hidden');
     } else {
       this.btnOpenLeaderboard.classList.remove('hidden');
-    }
-
-    this.updateCarouselDisplay();
-  }
-
-  navigateCarousel(delta) {
-    const total = LEVELS.length;
-    this.currentCarouselIndex = (this.currentCarouselIndex + delta + total) % total;
-    this.updateCarouselDisplay();
-
-    // Live 3D board preview update in background
-    const selectedLevel = LEVELS[this.currentCarouselIndex];
-    this.game.selectLevel(selectedLevel.id);
-  }
-
-  updateCarouselDisplay() {
-    const level = LEVELS[this.currentCarouselIndex];
-    const isUnlocked = this.game.isLevelUnlocked(level.id);
-
-    this.levelTitle.textContent = `LEVEL ${level.id}: ${level.name.toUpperCase()}`;
-    this.levelSubtitle.textContent = level.subtitle;
-    this.levelMultBadge.textContent = level.multiplierLabel;
-
-    // Pagination Dots
-    this.levelDotsContainer.innerHTML = '';
-    LEVELS.forEach((l, idx) => {
-      const dot = document.createElement('span');
-      dot.className = `dot ${idx === this.currentCarouselIndex ? 'active' : ''} ${
-        this.game.isLevelUnlocked(l.id) ? '' : 'locked-dot'
-      }`;
-      dot.addEventListener('click', () => {
-        this.currentCarouselIndex = idx;
-        this.updateCarouselDisplay();
-        this.game.selectLevel(l.id);
-      });
-      this.levelDotsContainer.appendChild(dot);
-    });
-
-    // Play CTA vs Locked Badge
-    if (isUnlocked) {
-      this.btnPlay.disabled = false;
-      this.btnPlay.classList.remove('btn-locked');
-      this.btnPlay.innerHTML = `<span>P L A Y</span> <svg class="icon-play" viewBox="0 0 24 24" width="22" height="22"><path fill="currentColor" d="M8 5v14l11-7z"/></svg>`;
-      this.levelLockNotice.classList.add('hidden');
-    } else {
-      this.btnPlay.disabled = true;
-      this.btnPlay.classList.add('btn-locked');
-      this.btnPlay.innerHTML = `<span>🔒 LOCKED</span>`;
-      this.levelLockNotice.classList.remove('hidden');
-      this.levelLockNotice.textContent = `Milestone: ${level.unlockDesc}`;
     }
   }
 
@@ -265,8 +197,9 @@ export class UIController {
       this.hudScreen.classList.remove('hidden');
       this.phaseBanner.classList.add('hidden');
 
-      const lvl = LEVELS.find((l) => l.id === this.game.currentLevelId) || LEVELS[0];
-      this.hudLevelBadge.textContent = `LVL ${lvl.id} • ${lvl.multiplier}x`;
+      if (this.hudLevelBadge) {
+        this.hudLevelBadge.textContent = 'SOLID MODE';
+      }
     }
   }
 
@@ -288,23 +221,36 @@ export class UIController {
 
     EMBLEM_SKINS.forEach((skin) => {
       const isEquipped = this.game.equippedSkinId === skin.id;
-      let isUnlocked = skin.unlockedByDefault;
-
-      if (!isUnlocked && skin.checkUnlock) {
-        isUnlocked = skin.checkUnlock(save);
-      }
+      const isUnlocked = skin.unlockedByDefault || skin.checkUnlock(save);
 
       const card = document.createElement('div');
-      card.className = `skin-card ${isEquipped ? 'active' : ''} ${!isUnlocked ? 'locked' : ''}`;
+      card.className = `skin-card glass-card ${isEquipped ? 'equipped' : ''} ${!isUnlocked ? 'locked' : ''}`;
 
       card.innerHTML = `
-        <div class="skin-card-header">
-          <span class="skin-name">${skin.name}</span>
-          ${isEquipped ? '<span class="skin-tag active-tag">EQUIPPED ✓</span>' : ''}
-          ${!isEquipped && isUnlocked ? '<button class="btn-equip">EQUIP</button>' : ''}
-          ${!isUnlocked ? '<span class="skin-tag locked-tag">🔒</span>' : ''}
+        <div class="skin-badge-container">
+          <div class="skin-icon-box">
+            ${
+              skin.key === 'classic'
+                ? `<svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M12 2C7.58 2 4 5.58 4 10c0 3.08 1.74 5.76 4.3 7.07-.15.42-.3.9-.3 1.43 0 .83.67 1.5 1.5 1.5h5c.83 0 1.5-.67 1.5-1.5 0-.53-.15-1.01-.3-1.43 2.56-1.31 4.3-3.99 4.3-7.07 0-4.42-3.58-8-8-8z"/></svg>`
+                : skin.key === 'neon'
+                ? `<svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 22h20L12 2z"/></svg>`
+                : skin.key === 'gold'
+                ? `<svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><circle cx="12" cy="12" r="9"/></svg>`
+                : `<img src="${getBitmojiUrl()}" class="skin-bitmoji-icon" alt="Bitmoji" />`
+            }
+          </div>
+          <div class="skin-name">${skin.name}</div>
+          <div class="skin-desc">${skin.description}</div>
         </div>
-        <p class="skin-desc">${skin.description}</p>
+        <div class="skin-footer">
+          ${
+            isEquipped
+              ? `<span class="badge-equipped">EQUIPPED ✓</span>`
+              : isUnlocked
+              ? `<button class="btn-equip">EQUIP</button>`
+              : `<span class="badge-locked">🔒 ${skin.condition}</span>`
+          }
+        </div>
       `;
 
       if (isUnlocked && !isEquipped) {
@@ -324,7 +270,7 @@ export class UIController {
     this.flexModalOverlay.classList.remove('hidden');
 
     if (payload.status === 'VICTORY') {
-      this.flexTitle.textContent = `★ ${payload.levelName.toUpperCase()} CLEARED! ★`;
+      this.flexTitle.textContent = `★ BOARD CLEARED! ★`;
       this.flexTitle.classList.remove('title-loss');
       this.flexTitle.classList.add('title-win');
       this.flexPbBadge.classList.toggle('hidden', !payload.isNewHighScore);
@@ -332,7 +278,9 @@ export class UIController {
       this.flexTimeBonus.textContent = `+${payload.timeBonus.toLocaleString()} pts (${payload.timeLeft.toFixed(1)}s)`;
       this.flexFlipBonus.textContent = `+${payload.flipBonus.toLocaleString()} pts (${payload.flipsCount} flips)`;
       this.flexStreakBonus.textContent = `+${payload.streakBonus.toLocaleString()} pts`;
-      this.flexMult.textContent = `×${payload.multiplier.toFixed(2)}`;
+      if (this.flexMult) {
+        this.flexMult.textContent = `×1.00`;
+      }
 
       // Score count-up animation
       let count = 0;
@@ -364,7 +312,9 @@ export class UIController {
       this.flexTimeBonus.textContent = '0 pts';
       this.flexFlipBonus.textContent = '0 pts';
       this.flexStreakBonus.textContent = '0 pts';
-      this.flexMult.textContent = '×0.00';
+      if (this.flexMult) {
+        this.flexMult.textContent = '×0.00';
+      }
       this.flexUnlocks.classList.add('hidden');
     }
   }

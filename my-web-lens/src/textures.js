@@ -10,59 +10,9 @@ const textureCache = new Map();
 function drawSwatchCanvas(ctx, width, height, swatch) {
   ctx.clearRect(0, 0, width, height);
 
-  // Background pattern rendering
-  if (swatch.type === 'solid') {
-    ctx.fillStyle = swatch.colorA || '#FF1E42';
-    ctx.fillRect(0, 0, width, height);
-  } else if (swatch.type === 'gradient') {
-    // 45° diagonal gradient (top-left to bottom-right)
-    const grad = ctx.createLinearGradient(0, 0, width, height);
-    grad.addColorStop(0, swatch.colorA);
-    grad.addColorStop(1, swatch.colorB);
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, width, height);
-  } else if (swatch.type === 'glow') {
-    const cx = width / 2;
-    const cy = height / 2;
-    const r = width * 0.52;
-    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
-    grad.addColorStop(0, swatch.coreColor);
-    grad.addColorStop(0.55, swatch.coreColor);
-    grad.addColorStop(1, swatch.rimColor);
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, width, height);
-  } else if (swatch.type === 'split') {
-    const { colorA, colorB, split } = swatch;
-
-    if (split === 'vertical') {
-      ctx.fillStyle = colorA;
-      ctx.fillRect(0, 0, width / 2, height);
-      ctx.fillStyle = colorB;
-      ctx.fillRect(width / 2, 0, width / 2, height);
-    } else if (split === 'horizontal') {
-      ctx.fillStyle = colorA;
-      ctx.fillRect(0, 0, width, height / 2);
-      ctx.fillStyle = colorB;
-      ctx.fillRect(0, height / 2, width, height / 2);
-    } else {
-      // 45° diagonal (triangle A and triangle B)
-      ctx.fillStyle = colorA;
-      ctx.beginPath();
-      ctx.moveTo(0, 0);
-      ctx.lineTo(width, 0);
-      ctx.lineTo(0, height);
-      ctx.closePath();
-      ctx.fill();
-
-      ctx.fillStyle = colorB;
-      ctx.beginPath();
-      ctx.moveTo(width, 0);
-      ctx.lineTo(width, height);
-      ctx.lineTo(0, height);
-      ctx.closePath();
-      ctx.fill();
-    }
-  }
+  // Background pattern rendering (Solid color)
+  ctx.fillStyle = swatch.colorA || '#FF1E42';
+  ctx.fillRect(0, 0, width, height);
 
   // Inner tactile bevel / ambient sheen
   const bevel = ctx.createLinearGradient(0, 0, 0, height);

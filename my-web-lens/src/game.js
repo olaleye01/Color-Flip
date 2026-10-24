@@ -1,6 +1,6 @@
 // src/game.js
-// Core Game Logic, State Machine, Timer, Scoring & Progression
-import { generateBoardPairs, LEVELS, EMBLEM_SKINS, SOLID_SWATCHES, GRADIENT_SWATCHES, GLOW_SWATCHES, SPLIT_SWATCHES } from './palette.js';
+// Core Game Logic, State Machine, Timer, Scoring & Progression (Solid Color Memory)
+import { generateBoardPairs, LEVELS, EMBLEM_SKINS, SOLID_SWATCHES } from './palette.js';
 import { sound } from './audio.js';
 import { persistSaveState, getSaveState, submitRoundScore } from './snapchat.js';
 
@@ -49,9 +49,8 @@ export class GameEngine {
   }
 
   init(saveState) {
-    this.currentLevelId = saveState.highestLevelUnlocked || 1;
     this.equippedSkinId = saveState.equippedSkin || 0;
-    this.board.applyLevelStyle(this.currentLevelId);
+    this.board.applyLevelStyle(1);
     this.board.applySkin(this.equippedSkinId);
     this.setState(GAME_STATES.LOBBY);
   }
@@ -61,28 +60,6 @@ export class GameEngine {
     if (this.onStateChange) {
       this.onStateChange(this.state);
     }
-  }
-
-  isLevelUnlocked(levelId) {
-    if (levelId === 1) return true;
-    const save = getSaveState();
-    if (levelId <= (save.highestLevelUnlocked || 1)) return true;
-
-    // Milestone check
-    if (levelId === 2) return save.levelsCleared && save.levelsCleared[0];
-    if (levelId === 3) return save.levelsCleared && save.levelsCleared[1] && save.fastestClearTimeLeft > 20.0;
-    if (levelId === 4) return save.levelsCleared && save.levelsCleared[2] && save.bestFlipCount <= 26;
-    if (levelId === 5) {
-      const l4Cleared = save.levelsCleared && save.levelsCleared[3];
-      const scoreHigh = (save.cumulativeScore || 0) >= 25000;
-      return l4Cleared || scoreHigh;
-    }
-    return false;
-  }
-
-  selectLevel(levelId) {
-    this.currentLevelId = levelId;
-    this.board.applyLevelStyle(levelId);
   }
 
   equipSkin(skinId) {
@@ -119,8 +96,8 @@ export class GameEngine {
     this.board.setCameraPreset('play', 5.0);
     this.board.isInputLocked = true;
 
-    // Generate final 8-pair board layout
-    this.boardTiles = generateBoardPairs(this.currentLevelId);
+    // Generate final 8-pair board layout from solid swatches
+    this.boardTiles = generateBoardPairs();
 
     // PHASE 1: 2.5s Live Color Shuffle
     this.setState(GAME_STATES.SHUFFLE);
@@ -132,12 +109,7 @@ export class GameEngine {
     this.board.allFaceUp();
 
     // Pool of random swatches to scramble through
-    const allPool = [
-      ...SOLID_SWATCHES,
-      ...GRADIENT_SWATCHES,
-      ...GLOW_SWATCHES,
-      ...SPLIT_SWATCHES,
-    ];
+    const allPool = SOLID_SWATCHES;
 
     sound.startShuffleSequence(() => {
       // Rapidly assign random swatches to each of the 16 tiles
@@ -226,7 +198,7 @@ export class GameEngine {
       if (this.onFlipsUpdate) this.onFlipsUpdate(this.flipsCount);
 
       this.board.flipTile(tileIndex, true);
-      sound.playFlip(this.currentLevelId);
+      sound.playFlip(1);
       return;
     }
 
@@ -241,7 +213,7 @@ export class GameEngine {
     if (this.onFlipsUpdate) this.onFlipsUpdate(this.flipsCount);
 
     this.board.flipTile(secondIdx, true);
-    sound.playFlip(this.currentLevelId);
+    sound.playFlip(1);
 
     const firstTile = this.boardTiles[firstIdx];
     const secondTile = this.boardTiles[secondIdx];
@@ -260,7 +232,7 @@ export class GameEngine {
 
       this.board.setTileMatched(firstIdx);
       this.board.setTileMatched(secondIdx);
-      sound.playMatch(this.currentLevelId, this.currentStreak);
+      sound.playMatch(1, this.currentStreak);
 
       if (this.onStreakUpdate) {
         this.onStreakUpdate(this.currentStreak, this.streakBonusTotal);
@@ -280,7 +252,7 @@ export class GameEngine {
         this.onStreakUpdate(0, this.streakBonusTotal);
       }
 
-      sound.playMismatch(this.currentLevelId);
+      sound.playMismatch(1);
       this.board.shakeTile(firstIdx);
       this.board.shakeTile(secondIdx);
 
@@ -298,16 +270,13 @@ export class GameEngine {
     this.board.isInputLocked = true;
     if (this.gameLoopTimer) cancelAnimationFrame(this.gameLoopTimer);
 
-    sound.playVictory(this.currentLevelId);
+    sound.playVictory(1);
 
-    // Calculate Final Score per Section 4 formula
+    // Calculate Final Score per mental model formula
     const timeBonus = Math.round(this.timeLeft * 100); // 0.1s precision
     const flipBonus = Math.max(0, 4000 - this.flipsCount * 100);
     const streakBonus = this.streakBonusTotal;
-    const baseScore = timeBonus + flipBonus + streakBonus;
-
-    const levelObj = LEVELS.find((l) => l.id === this.currentLevelId) || LEVELS[0];
-    const finalScore = Math.round(baseScore * levelObj.multiplier);
+    const finalScore = timeBonus + flipBonus + streakBonus;
 
     // Save state progression update
     const prevSave = getSaveState();
@@ -318,49 +287,25 @@ export class GameEngine {
     const newBestFlips = Math.min(prevSave.bestFlipCount || 999, this.flipsCount);
     const newBestTimeLeft = Math.max(prevSave.fastestClearTimeLeft || 0, this.timeLeft);
 
-    const levelsCleared = [...(prevSave.levelsCleared || [false, false, false, false, false])];
-    levelsCleared[this.currentLevelId - 1] = true;
-
-    // Check unlocks
-    let highestUnlocked = prevSave.highestLevelUnlocked || 1;
+    // Check cosmetic skin unlocks
     const newUnlocks = [];
-
-    if (this.currentLevelId === 1 && highestUnlocked < 2) {
-      highestUnlocked = 2;
-      newUnlocks.push('Level 2: Gradient');
+    if (newGamesWon >= 5 && (prevSave.totalGamesWon || 0) < 5) {
+      newUnlocks.push('Tile Back Skin: Neon Prism (5 Wins)');
     }
-    if (this.currentLevelId === 2 && this.timeLeft > 20.0 && highestUnlocked < 3) {
-      highestUnlocked = 3;
-      newUnlocks.push('Level 3: Center Glow');
+    if (this.flipsCount <= 18 && (prevSave.bestFlipCount || 999) > 18) {
+      newUnlocks.push('Tile Back Skin: 24K Gold Foil (≤18 Flips)');
     }
-    if (this.currentLevelId === 3 && this.flipsCount <= 26 && highestUnlocked < 4) {
-      highestUnlocked = 4;
-      newUnlocks.push('Level 4: Split');
-    }
-    if ((this.currentLevelId === 4 || newCumulative >= 25000) && highestUnlocked < 5) {
-      highestUnlocked = 5;
-      newUnlocks.push('Level 5: Mixed Master Tier');
-    }
-
-    // Check skin unlocks
-    if (newGamesWon >= 5 && !EMBLEM_SKINS[1].unlockedByDefault) {
-      newUnlocks.push('Tile Emblem: Neon Prism');
-    }
-    if (this.flipsCount <= 18) {
-      newUnlocks.push('Tile Emblem: 24K Gold Foil');
-    }
-    if (this.currentLevelId === 5) {
-      newUnlocks.push('Tile Emblem: Bitmoji Stamp');
+    if ((newGamesWon >= 10 || this.flipsCount <= 16) && (prevSave.totalGamesWon || 0) < 10 && (prevSave.bestFlipCount || 999) > 16) {
+      newUnlocks.push('Tile Back Skin: Bitmoji Stamp');
     }
 
     const updatedSave = {
       highScore: newHighScore,
       cumulativeScore: newCumulative,
       totalGamesWon: newGamesWon,
-      highestLevelUnlocked: highestUnlocked,
       fastestClearTimeLeft: newBestTimeLeft,
       bestFlipCount: newBestFlips,
-      levelsCleared,
+      equippedSkin: this.equippedSkinId,
     };
 
     // Persist and submit score to Snapchat Leaderboard
@@ -370,17 +315,15 @@ export class GameEngine {
     if (this.onRoundEnd) {
       this.onRoundEnd({
         status: 'VICTORY',
-        levelId: this.currentLevelId,
-        levelName: levelObj.name,
-        timeLeft: this.timeLeft,
-        timeBonus,
-        flipsCount: this.flipsCount,
-        flipBonus,
-        streakBonus,
-        baseScore,
-        multiplier: levelObj.multiplier,
+        levelName: 'Solid',
         finalScore,
         isNewHighScore,
+        timeBonus,
+        timeLeft: this.timeLeft,
+        flipBonus,
+        flipsCount: this.flipsCount,
+        streakBonus,
+        multiplier: 1.0,
         newUnlocks,
       });
     }
@@ -391,16 +334,20 @@ export class GameEngine {
     this.board.isInputLocked = true;
     if (this.gameLoopTimer) cancelAnimationFrame(this.gameLoopTimer);
 
-    sound.playMismatch(this.currentLevelId);
+    sound.playMismatch(1);
 
     if (this.onRoundEnd) {
       this.onRoundEnd({
         status: 'TIME_UP',
-        levelId: this.currentLevelId,
-        levelName: LEVELS.find((l) => l.id === this.currentLevelId)?.name || 'Solid',
+        levelName: 'Solid',
         finalScore: 0,
-        flipsCount: this.flipsCount,
         isNewHighScore: false,
+        timeBonus: 0,
+        timeLeft: 0,
+        flipBonus: 0,
+        flipsCount: this.flipsCount,
+        streakBonus: 0,
+        multiplier: 0,
         newUnlocks: [],
       });
     }
@@ -413,8 +360,9 @@ export class GameEngine {
   returnToLobby() {
     if (this.gameLoopTimer) cancelAnimationFrame(this.gameLoopTimer);
     sound.stopShuffleSequence();
-    this.board.isInputLocked = true;
+
     this.board.setCameraPreset('preview', 4.0);
+    this.board.applyLevelStyle(1);
     this.board.allFaceDown();
     this.setState(GAME_STATES.LOBBY);
   }

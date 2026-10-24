@@ -2,7 +2,7 @@
 // PlayCanvas 3D Board & Tile Architecture for Color Flip
 import * as pc from 'playcanvas';
 import { getSwatchTexture, getEmblemTexture } from './textures.js';
-import { LEVELS, SOLID_SWATCHES, GRADIENT_SWATCHES, GLOW_SWATCHES, SPLIT_SWATCHES } from './palette.js';
+import { LEVELS, SOLID_SWATCHES } from './palette.js';
 
 export class Board3D {
   constructor(canvasElement) {
@@ -292,43 +292,25 @@ export class Board3D {
     }, 180);
   }
 
-  applyLevelStyle(levelId) {
-    this.activeLevelId = levelId;
-    const lvl = LEVELS.find((l) => l.id === levelId) || LEVELS[0];
+  applyLevelStyle(levelId = 1) {
+    this.activeLevelId = 1;
+    const lvl = LEVELS[0];
 
-    // 1. Camera Clear Color & Ambient Lighting
+    // 1. Camera Clear Color & Ambient Studio Lighting
     const clearHex = lvl.boardBg;
     const clearCol = new pc.Color().fromString(clearHex);
     this.cameraEntity.camera.clearColor = clearCol;
 
-    if (levelId === 1) {
-      this.app.scene.ambientColor = new pc.Color(0.7, 0.7, 0.72);
-      this.lightEntity.light.color = new pc.Color(1, 1, 1);
-      this.lightEntity.light.intensity = 1.3;
-    } else if (levelId === 2) {
-      this.app.scene.ambientColor = new pc.Color(0.62, 0.52, 0.45);
-      this.lightEntity.light.color = new pc.Color(1.0, 0.92, 0.82);
-      this.lightEntity.light.intensity = 1.25;
-    } else if (levelId === 3) {
-      this.app.scene.ambientColor = new pc.Color(0.38, 0.45, 0.6);
-      this.lightEntity.light.color = new pc.Color(0.7, 0.9, 1.0);
-      this.lightEntity.light.intensity = 1.4;
-    } else if (levelId === 4) {
-      this.app.scene.ambientColor = new pc.Color(0.52, 0.54, 0.56);
-      this.lightEntity.light.color = new pc.Color(0.95, 0.95, 1.0);
-      this.lightEntity.light.intensity = 1.35;
-    } else if (levelId === 5) {
-      this.app.scene.ambientColor = new pc.Color(0.58, 0.48, 0.68);
-      this.lightEntity.light.color = new pc.Color(1.0, 0.85, 1.0);
-      this.lightEntity.light.intensity = 1.45;
-    }
+    this.app.scene.ambientColor = new pc.Color(0.7, 0.7, 0.72);
+    this.lightEntity.light.color = new pc.Color(1, 1, 1);
+    this.lightEntity.light.intensity = 1.3;
 
-    // 2. Tray material & lighting
+    // 2. Tray material & lighting (Minimalist studio matte tray)
     const trayMat = this.trayEntity.render.meshInstances[0].material;
     trayMat.diffuse = new pc.Color().fromString(lvl.trayColor);
     trayMat.useMetalness = true;
-    trayMat.metalness = levelId === 3 || levelId === 4 ? 0.6 : 0.2;
-    trayMat.gloss = levelId === 5 ? 0.95 : 0.8;
+    trayMat.metalness = 0.2;
+    trayMat.gloss = 0.8;
     trayMat.update();
 
     // 3. Tile body edge styling
@@ -338,15 +320,9 @@ export class Board3D {
       t.bodyMat.update();
     });
 
-    // 4. Sample swatch preview in lobby
-    let pool = SOLID_SWATCHES;
-    if (levelId === 2) pool = GRADIENT_SWATCHES;
-    else if (levelId === 3) pool = GLOW_SWATCHES;
-    else if (levelId === 4) pool = SPLIT_SWATCHES;
-    else if (levelId === 5) pool = [...SOLID_SWATCHES, ...GRADIENT_SWATCHES, ...GLOW_SWATCHES, ...SPLIT_SWATCHES];
-
+    // 4. Sample swatch preview in lobby using solid swatches
     for (let i = 0; i < 16; i++) {
-      this.setTileSwatch(i, pool[i % pool.length]);
+      this.setTileSwatch(i, SOLID_SWATCHES[i % SOLID_SWATCHES.length]);
     }
 
     // 5. Refresh tile back emblem

@@ -55,37 +55,11 @@
             <p class="tagline">3D VISUAL MEMORY</p>
           </div>
 
-          <!-- Carousel Level Header Card -->
-          <div class="carousel-card-container">
-            <div class="glass-card level-header-card">
-              <h2 id="lobby-level-title" class="level-title">LEVEL 1: SOLID</h2>
-              <p id="lobby-level-subtitle" class="level-subtitle">Studio Matte</p>
-              <div id="lobby-mult-badge" class="mult-badge">1.00x SCORE</div>
-            </div>
-
-            <!-- Carousel Navigation Arrows -->
-            <div class="carousel-nav-row">
-              <button id="btn-prev-level" class="btn-arrow" aria-label="Previous Level">
-                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-              <div id="level-dots" class="pagination-dots"></div>
-              <button id="btn-next-level" class="btn-arrow" aria-label="Next Level">
-                <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-            </div>
-          </div>
-
-          <!-- Middle Viewport Spacer (Keeps 3D 4x4 Preview Clear) -->
+          <!-- Middle Viewport Spacer (Keeps 3D 4x4 Board Prominent & Clear) -->
           <div class="viewport-spacer"></div>
 
           <!-- Bottom Action Zone -->
           <div class="lobby-actions-bottom">
-            <div id="level-lock-notice" class="lock-notice hidden"></div>
-
             <!-- Primary Play CTA -->
             <button id="btn-play" class="btn-primary-cta" aria-label="Start Game">
               <span>P L A Y</span>
@@ -154,9 +128,9 @@
             </div>
           </div>
 
-          <!-- Sub Multiplier Pill -->
+          <!-- Sub Badge Row -->
           <div class="hud-sub-badge-row">
-            <div id="hud-level-badge" class="hud-mult-pill">LVL 1 • 1.00x</div>
+            <div id="hud-level-badge" class="hud-mult-pill">SOLID MODE</div>
           </div>
 
           <!-- Middle Viewport Spacer (Keeps 3D Board Clear) -->
@@ -196,7 +170,7 @@
         <div id="flex-modal" class="flex-card-modal hidden" role="dialog" aria-modal="true" aria-label="Round Summary">
           <div class="glass-card flex-receipt-card">
             <div class="flex-receipt-header">
-              <h2 id="flex-title" class="flex-title title-win">★ LEVEL 1 CLEARED! ★</h2>
+              <h2 id="flex-title" class="flex-title title-win">★ BOARD CLEARED! ★</h2>
               <div class="flex-avatar-frame">
                 <img id="flex-avatar" src="./assets/avatar_default.png" alt="Victory Bitmoji" onerror="this.src='./assets/avatar_default.png'" />
               </div>
@@ -224,10 +198,6 @@
                   <td>🔥 Streak Bonus</td>
                   <td id="flex-streak-bonus" class="table-val">+0 pts</td>
                 </tr>
-                <tr>
-                  <td>⚡ Level Multiplier</td>
-                  <td id="flex-mult" class="table-val">×1.00</td>
-                </tr>
               </tbody>
             </table>
 
@@ -249,7 +219,7 @@
               </button>
 
               <button id="btn-flex-change-level" class="btn-subtle-link">
-                CHANGE LEVEL
+                BACK TO LOBBY
               </button>
             </div>
           </div>
