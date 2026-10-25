@@ -17,8 +17,8 @@
       rel="stylesheet"
     />
 
-    <script type="module" crossorigin src="./assets/index-Bs9H-kPG.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-CLEQeiNq.css">
+    <script type="module" crossorigin src="./assets/index-D0fv_qdT.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-Dvby8TNZ.css">
   </head>
   <body>
     <!-- App Container (9:16 Vertical Safe Ratio on Mobile, Centered Mobile Stage on Desktop) -->
@@ -218,70 +218,19 @@
 
         <div id="flex-modal" class="flex-card-modal hidden" role="dialog" aria-modal="true" aria-label="Round Summary">
 
-          <!-- Top 3D Celebration Banner -->
-          <div class="flex-banner-header header-pop-active">
-            <!-- Dynamic Neon Arcade Burst Rays & Spotlight Backdrop -->
-            <div class="title-burst-backdrop" aria-hidden="true">
-              <div class="title-spotlight-halo"></div>
-              <svg class="title-burst-svg" viewBox="0 0 360 190" fill="none">
-                <defs>
-                  <linearGradient id="ray-grad-gold-1" x1="0%" y1="100%" x2="0%" y2="0%">
-                    <stop offset="0%" stop-color="#FF7700" />
-                    <stop offset="60%" stop-color="#FFDD00" />
-                    <stop offset="100%" stop-color="#FFFFFF" />
-                  </linearGradient>
-                  <linearGradient id="ray-grad-gold-2" x1="100%" y1="100%" x2="0%" y2="0%">
-                    <stop offset="0%" stop-color="#FF8800" />
-                    <stop offset="60%" stop-color="#FFEA00" />
-                    <stop offset="100%" stop-color="#FFFFFF" />
-                  </linearGradient>
-                  <linearGradient id="ray-grad-cyan-1" x1="0%" y1="100%" x2="0%" y2="0%">
-                    <stop offset="0%" stop-color="#0066FF" />
-                    <stop offset="55%" stop-color="#00E5FF" />
-                    <stop offset="100%" stop-color="#FFFFFF" />
-                  </linearGradient>
-                  <linearGradient id="ray-grad-cyan-2" x1="100%" y1="100%" x2="0%" y2="0%">
-                    <stop offset="0%" stop-color="#0055FF" />
-                    <stop offset="60%" stop-color="#38BDF8" />
-                    <stop offset="100%" stop-color="#FFFFFF" />
-                  </linearGradient>
-                  <filter id="ray-glow-gold" x="-30%" y="-30%" width="160%" height="160%">
-                    <feDropShadow dx="0" dy="0" stdDeviation="3.5" flood-color="#FFB700" flood-opacity="0.85" />
-                  </filter>
-                  <filter id="ray-glow-cyan" x="-30%" y="-30%" width="160%" height="160%">
-                    <feDropShadow dx="0" dy="0" stdDeviation="3.5" flood-color="#00E5FF" flood-opacity="0.9" />
-                  </filter>
-                </defs>
-
-                <!-- Upper & Diagonal Radiating Energy Rays -->
-                <!-- Top-Left High Yellow Ray -->
-                <line x1="130" y1="52" x2="100" y2="16" stroke="url(#ray-grad-gold-1)" stroke-width="5" stroke-linecap="round" filter="url(#ray-glow-gold)" />
-                <!-- Top-Left Cyan Ray -->
-                <line x1="98" y1="68" x2="56" y2="38" stroke="url(#ray-grad-cyan-1)" stroke-width="4.2" stroke-linecap="round" filter="url(#ray-glow-cyan)" />
-                <!-- Far Left Cyan Accent Ray -->
-                <line x1="72" y1="94" x2="24" y2="84" stroke="url(#ray-grad-cyan-2)" stroke-width="3.8" stroke-linecap="round" filter="url(#ray-glow-cyan)" />
-                <!-- Bottom-Left Warm Orange-Gold Ray -->
-                <line x1="96" y1="126" x2="52" y2="148" stroke="url(#ray-grad-gold-2)" stroke-width="4.5" stroke-linecap="round" filter="url(#ray-glow-gold)" />
-
-                <!-- Top Center Yellow Accent Ray -->
-                <line x1="180" y1="40" x2="180" y2="10" stroke="url(#ray-grad-gold-1)" stroke-width="4" stroke-linecap="round" filter="url(#ray-glow-gold)" />
-
-                <!-- Top-Right High Yellow Ray -->
-                <line x1="230" y1="52" x2="260" y2="16" stroke="url(#ray-grad-gold-1)" stroke-width="5" stroke-linecap="round" filter="url(#ray-glow-gold)" />
-                <!-- Top-Right Cyan Ray -->
-                <line x1="262" y1="68" x2="304" y2="38" stroke="url(#ray-grad-cyan-1)" stroke-width="4.2" stroke-linecap="round" filter="url(#ray-glow-cyan)" />
-                <!-- Far Right Cyan Accent Ray -->
-                <line x1="288" y1="94" x2="336" y2="84" stroke="url(#ray-grad-cyan-2)" stroke-width="3.8" stroke-linecap="round" filter="url(#ray-glow-cyan)" />
-                <!-- Bottom-Right Warm Orange-Gold Ray -->
-                <line x1="264" y1="126" x2="308" y2="148" stroke="url(#ray-grad-gold-2)" stroke-width="4.5" stroke-linecap="round" filter="url(#ray-glow-gold)" />
-              </svg>
-            </div>
-
-            <!-- 3D Stacked Bubbly Cartoon Title -->
-            <h2 id="flex-title" class="flex-3d-title title-win" aria-label="Board Cleared!">
-              <span id="flex-title-word-1" class="flex-title-word word-board">BOARD</span>
-              <span id="flex-title-word-2" class="flex-title-word word-cleared">CLEARED!</span>
+          <!-- Result Wordmark: candy letters matching the lobby COLOR FLIP logo.
+               Letters are (re)built by UI.setFlexTitle() so the entrance replays each round. -->
+          <div class="flex-banner-header">
+            <h2 id="flex-title" class="flex-3d-title title-win">
+              <span id="flex-title-sr" class="sr-only">Board cleared!</span>
+              <span class="end-spark es1" aria-hidden="true"></span>
+              <span class="end-spark es2" aria-hidden="true"></span>
+              <span class="end-spark es3" aria-hidden="true"></span>
+              <span class="end-spark es4" aria-hidden="true"></span>
+              <span id="flex-title-word-1" class="flex-title-word word-top" aria-hidden="true"></span>
+              <span id="flex-title-word-2" class="flex-title-word word-main" aria-hidden="true"></span>
             </h2>
+            <p id="flex-kicker" class="flex-kicker" aria-hidden="true">ROUND COMPLETE</p>
           </div>
 
           <!-- Avatar Medallion (Perched Over Card Top Edge) -->
