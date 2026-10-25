@@ -35,6 +35,7 @@ export class UIController {
     this.hudFlips = document.getElementById('hud-flips');
     this.hudPaceDot = document.getElementById('hud-pace-dot');
     this.hudLevelBadge = document.getElementById('hud-level-badge');
+    this.hudPairs = document.getElementById('hud-pairs');
     this.streakBar = document.getElementById('streak-bar');
     this.streakText = document.getElementById('streak-text');
     this.btnRestart = document.getElementById('btn-restart');
@@ -98,6 +99,10 @@ export class UIController {
     // Quick Restart in HUD
     this.btnRestart.addEventListener('click', () => {
       this.game.quickRestart();
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && !this.skinDrawer.classList.contains('hidden')) this.closeSkinDrawer();
     });
 
     // Skin Drawer Open/Close
@@ -164,6 +169,7 @@ export class UIController {
     };
 
     this.game.onStreakUpdate = (streak, bonusTotal) => {
+      this.hudPairs.textContent = `${this.game.matchedPairs} / 8 pairs`;
       if (streak >= 2) {
         this.streakBar.classList.remove('hidden');
         this.streakText.innerHTML = `<svg class="icon-streak-flame" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 23c4.97 0 9-4.03 9-9 0-3.6-2.1-6.72-5.15-8.15C15.4 7.2 14.3 8.8 13.5 10c-.8-1.5-1.5-3.6-1.5-6 0-.6-.2-1.2-.5-1.7C8.2 4.4 5 8.7 5 14c0 4.97 4.03 9 9 9zm-1-8.5c0-1.4.8-2.6 1.8-3.3 1.2 1.3 2.2 2.7 2.2 4.3 0 1.66-1.34 3-3 3s-3-1.34-3-3c0-.3.1-.7.2-1 .3-.3.8-.5 1.8-.5v.5z"/></svg> <span>${streak}x STREAK (+${bonusTotal} PTS)</span>`;
@@ -196,8 +202,10 @@ export class UIController {
 
     if (!isCapabilitySupported('leaderboards')) {
       this.btnOpenLeaderboard.classList.add('hidden');
+      this.btnFlexLeaderboard.classList.add('hidden');
     } else {
       this.btnOpenLeaderboard.classList.remove('hidden');
+      this.btnFlexLeaderboard.classList.remove('hidden');
     }
   }
 
@@ -224,6 +232,7 @@ export class UIController {
   renderState(state) {
     if (this.stage) {
       this.stage.classList.toggle('in-game', state !== GAME_STATES.LOBBY);
+      this.stage.classList.toggle('preparing', [GAME_STATES.SHUFFLE, GAME_STATES.PEEK, GAME_STATES.CASCADE].includes(state));
     }
 
     if (state === GAME_STATES.LOBBY) {
@@ -250,11 +259,15 @@ export class UIController {
     this.skinDrawer.classList.remove('hidden');
     this.skinDrawerOverlay.classList.remove('hidden');
     this.renderSkinList();
+    this.btnCloseSkins.focus();
+    this.lobbyScreen.inert = true;
   }
 
   closeSkinDrawer() {
     this.skinDrawer.classList.add('hidden');
     this.skinDrawerOverlay.classList.add('hidden');
+    this.lobbyScreen.inert = false;
+    this.btnOpenSkins.focus();
   }
 
   renderSkinList() {
@@ -308,7 +321,11 @@ export class UIController {
 
   // Flex Card Modal
   showFlexCard(payload) {
+    this.stage.classList.add('showing-results');
+    this.lobbyScreen.inert = true;
+    this.hudScreen.inert = true;
     this.flexModal.classList.remove('hidden');
+    this.btnFlexPlayAgain.focus();
     this.flexModalOverlay.classList.remove('hidden');
 
     if (payload.status === 'VICTORY') {
@@ -316,6 +333,7 @@ export class UIController {
       if (this.flexTitleWord2) this.flexTitleWord2.textContent = 'CLEARED!';
       this.flexTitle.classList.remove('title-loss');
       this.flexTitle.classList.add('title-win');
+      this.flexModal.setAttribute('aria-label', 'Board cleared. Round summary');
       this.flexPbBadge.classList.toggle('hidden', !payload.isNewHighScore);
 
       this.flexTimeBonus.textContent = `+${payload.timeBonus.toLocaleString()} pts`;
@@ -362,6 +380,7 @@ export class UIController {
       if (this.flexTitleWord2) this.flexTitleWord2.textContent = "UP!";
       this.flexTitle.classList.remove('title-win');
       this.flexTitle.classList.add('title-loss');
+      this.flexModal.setAttribute('aria-label', 'Time’s up. Round summary');
       this.flexPbBadge.classList.add('hidden');
       this.flexScore.textContent = '0';
       this.flexTimeBonus.textContent = '+0 pts';
@@ -381,6 +400,9 @@ export class UIController {
   }
 
   closeFlexCard() {
+    this.stage.classList.remove('showing-results');
+    this.lobbyScreen.inert = false;
+    this.hudScreen.inert = false;
     this.flexModal.classList.add('hidden');
     this.flexModalOverlay.classList.add('hidden');
   }

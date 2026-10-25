@@ -18,6 +18,7 @@
     />
 
     <link rel="stylesheet" href="./index.css" />
+    <link rel="stylesheet" href="./buttons.css" />
   </head>
   <body>
     <!-- App Container (9:16 Vertical Safe Ratio on Mobile, Centered Mobile Stage on Desktop) -->
@@ -91,14 +92,14 @@
               <span class="logo-spark s2"></span>
               <span class="logo-spark s3"></span>
               <span class="logo-spark s4"></span>
-              <span class="logo-word logo-color" aria-hidden="true">COLOR</span>
+              <span class="logo-word logo-color" aria-hidden="true"><span class="color-letter" style="--letter: 0">C</span><span class="color-letter" style="--letter: 1">O</span><span class="color-letter" style="--letter: 2">L</span><span class="color-letter" style="--letter: 3">O</span><span class="color-letter" style="--letter: 4">R</span></span>
               <span class="logo-flip-row" aria-hidden="true">
                 <svg class="flip-arrow arrow-left" viewBox="0 0 40 60" width="28" height="44">
                   <path d="M30 6 C10 14 8 42 26 54" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" />
                   <path d="M18 4 L34 4 L26 18 Z" fill="currentColor" transform="rotate(-20 26 8)" />
                 </svg>
                 <span class="logo-word logo-flip">
-                  <span class="fl f">F</span><span class="fl l">L</span><span class="fl i">I</span><span class="fl p">P</span>
+                  <span class="fl f" style="--letter: 0"><span>F</span></span><span class="fl l" style="--letter: 1"><span>L</span></span><span class="fl i" style="--letter: 2"><span>I</span></span><span class="fl p" style="--letter: 3"><span>P</span></span>
                 </span>
                 <svg class="flip-arrow arrow-right" viewBox="0 0 40 60" width="28" height="44">
                   <path d="M10 54 C30 46 32 18 14 6" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" />
@@ -114,6 +115,8 @@
 
           <!-- Bottom Action Zone -->
           <div class="lobby-actions-bottom">
+            <p class="play-hint">Remember the colors. Find every pair.</p>
+            <div class="round-facts"><span><strong>16</strong> tiles</span><span><strong>8</strong> pairs</span><span><strong>60</strong> seconds</span></div>
             <!-- Primary Play CTA -->
             <div class="play-cta-wrap">
               <span class="cta-tick t-left-a"></span>
@@ -201,6 +204,7 @@
           <!-- Sub Badge Row -->
           <div class="hud-sub-badge-row">
             <div id="hud-level-badge" class="hud-mult-pill">SOLID MODE</div>
+            <span id="hud-pairs" class="pairs-progress" aria-live="polite">0 / 8 pairs</span>
           </div>
 
           <!-- Middle Viewport Spacer (Keeps 3D Board Clear) -->
@@ -407,7 +411,7 @@
                       <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
                     </svg>
                   </div>
-                  <span class="breakdown-label">Flips Efficiency</span>
+                  <span class="breakdown-label">Flip efficiency</span>
                 </div>
                 <div class="breakdown-value-col">
                   <span id="flex-flip-bonus" class="pts-val">+0 pts</span>
@@ -442,7 +446,7 @@
               <span class="burst-tick-ray tick-left-1"></span>
               <span class="burst-tick-ray tick-left-2"></span>
               <span class="burst-tick-ray tick-left-3"></span>
-              <button id="btn-flex-play-again" class="btn-flex-play-cta" aria-label="Play Again">
+              <button id="btn-flex-play-again" class="btn-flex-play-cta btn-primary-cta" aria-label="Play Again">
                 <span id="btn-flex-play-text">PLAY AGAIN</span>
                 <svg class="icon-play-triangle" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
                   <path d="M8 5v14l11-7z" />
@@ -454,7 +458,7 @@
             </div>
 
             <!-- Secondary Action: Glossy Deep Royal Blue Capsule with Chevrons & Trophy -->
-            <button id="btn-flex-leaderboard" class="btn-flex-leaderboard-cta" aria-label="View Friend Leaderboard">
+            <button id="btn-flex-leaderboard" class="btn-flex-leaderboard-cta btn-secondary-pill" aria-label="View Friend Leaderboard">
               <svg class="chev-nav chev-left" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
               </svg>
@@ -462,7 +466,7 @@
                 <svg class="icon-trophy-svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
                   <path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0011 15.9V19H8v2h8v-2h-3v-3.1c1.8-.46 3.16-1.95 3.61-3.96C19.08 11.63 21 9.55 21 7V5c0-1.1-.9-2-2-2zM5 8V5h2v4.82C5.84 9.4 5 8.78 5 8zm14 0c0 .78-.84 1.4-2 1.82V5h2v3z"/>
                 </svg>
-                <span>VIEW FRIEND LEADERBOARD</span>
+                <span>FRIEND LEADERBOARD</span>
               </div>
               <svg class="chev-nav chev-right" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
