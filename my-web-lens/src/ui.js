@@ -185,11 +185,11 @@ export class UIController {
     }
 
     if (!isCapabilitySupported('leaderboards')) {
-      this.btnOpenLeaderboard.classList.add('hidden');
-      this.btnFlexLeaderboard.classList.add('hidden');
+      this.btnOpenLeaderboard?.classList.add('hidden');
+      this.btnFlexLeaderboard?.classList.add('hidden');
     } else {
-      this.btnOpenLeaderboard.classList.remove('hidden');
-      this.btnFlexLeaderboard.classList.remove('hidden');
+      this.btnOpenLeaderboard?.classList.remove('hidden');
+      this.btnFlexLeaderboard?.classList.remove('hidden');
     }
   }
 

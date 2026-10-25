@@ -2013,4 +2013,231 @@ button:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   .game-logo *, .game-logo .flip-arrow, .game-logo .logo-spark { animation: none !important; }
   .flex-banner-header *, .flex-kicker { animation: none !important; }
+  .loading-title { animation: none !important; }
+  .loading-capsule-fill::after { animation: none !important; display: none !important; }
+  .loading-screen-view { transition: opacity 0.1s linear !important; }
 }
+
+/* ===================================================
+   SCREEN 0: LOADING SCREEN
+   Inspiration: Neon glowing capsule progress bar,
+   glowing game tip card, simple navy gradient background
+   =================================================== */
+
+.loading-screen-view {
+  position: absolute;
+  inset: 0;
+  z-index: 95;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  /* Simple elegant navy gradient background */
+  background: radial-gradient(120% 90% at 50% 30%, #0d173d 0%, #09102c 50%, #040816 100%);
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+  transition: opacity 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+              transform 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+              visibility 0.45s ease;
+  pointer-events: auto;
+}
+
+.loading-screen-view.fade-out {
+  opacity: 0;
+  transform: scale(1.03);
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.loading-content-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 340px;
+  margin: auto 0;
+  padding-bottom: 24px;
+}
+
+/* "L O A D I N G . . ." Title */
+.loading-title-row {
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading-title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(14px, 2.2cqh, 17px);
+  letter-spacing: 0.42em;
+  text-indent: 0.42em; /* Offsets rightmost letter-spacing to center text precisely */
+  color: #ffffff;
+  text-shadow: 0 0 10px rgba(0, 229, 255, 0.45), 0 0 22px rgba(217, 70, 239, 0.25);
+  animation: loadingTitlePulse 3s ease-in-out infinite alternate;
+}
+
+@keyframes loadingTitlePulse {
+  0% {
+    opacity: 0.92;
+    text-shadow: 0 0 8px rgba(0, 229, 255, 0.4), 0 0 18px rgba(217, 70, 239, 0.2);
+  }
+  100% {
+    opacity: 1;
+    text-shadow: 0 0 14px rgba(0, 229, 255, 0.7), 0 0 28px rgba(217, 70, 239, 0.4);
+  }
+}
+
+/* Capsule Progress Bar Outer Track */
+.loading-capsule-track {
+  position: relative;
+  width: 290px;
+  max-width: 86%;
+  height: 38px;
+  border-radius: 9999px;
+  background: rgba(6, 11, 30, 0.88);
+  border: 1.5px solid rgba(0, 217, 245, 0.55);
+  box-shadow:
+    0 0 18px rgba(0, 217, 245, 0.32),
+    0 0 32px rgba(217, 70, 239, 0.2),
+    inset 0 2px 8px rgba(0, 0, 0, 0.75),
+    inset 0 0 10px rgba(0, 217, 245, 0.12);
+  display: flex;
+  align-items: center;
+  padding: 3.5px;
+  overflow: hidden;
+}
+
+.loading-capsule-fill-zone {
+  position: absolute;
+  inset: 3px;
+  border-radius: 9999px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+/* Inner Glowing Pill Fill */
+.loading-capsule-fill {
+  height: 100%;
+  width: 0%;
+  min-width: 0;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, #00e5ff 0%, #a855f7 50%, #ff1f9e 100%);
+  box-shadow:
+    0 0 16px rgba(0, 229, 255, 0.75),
+    0 0 26px rgba(255, 31, 158, 0.55);
+  position: relative;
+  transition: width 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  overflow: hidden;
+}
+
+/* Glass reflection along the upper curve of the fill */
+.loading-capsule-gloss {
+  position: absolute;
+  top: 1px;
+  left: 4px;
+  right: 4px;
+  height: 42%;
+  border-radius: 9999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 100%);
+  pointer-events: none;
+}
+
+/* Subtle light shimmer passing across the bar */
+.loading-capsule-fill::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.45) 50%, transparent 100%);
+  transform: translateX(-100%);
+  animation: capsuleShimmer 2.2s infinite ease-in-out;
+  border-radius: 9999px;
+  pointer-events: none;
+}
+
+@keyframes capsuleShimmer {
+  0% { transform: translateX(-100%); }
+  60%, 100% { transform: translateX(200%); }
+}
+
+/* Percentage Text Label */
+.loading-percent-label {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-timer);
+  font-weight: 800;
+  font-size: 13.5px;
+  color: #ffffff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95), 0 0 6px rgba(0, 0, 0, 0.8);
+  z-index: 3;
+  pointer-events: none;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Game Tip Pill Card with Cyan-Magenta Dual Glow */
+.loading-tip-card {
+  margin-top: 26px;
+  width: 300px;
+  max-width: 88%;
+  padding: 16px 22px 18px 22px;
+  border-radius: 20px;
+  background: rgba(9, 15, 38, 0.78);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1.5px solid transparent;
+  background-image:
+    linear-gradient(rgba(8, 14, 38, 0.88), rgba(8, 14, 38, 0.88)),
+    linear-gradient(135deg, rgba(0, 229, 255, 0.75) 0%, rgba(168, 85, 247, 0.35) 50%, rgba(255, 31, 158, 0.75) 100%);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+  box-shadow:
+    0 0 20px rgba(0, 229, 255, 0.2),
+    0 0 32px rgba(255, 31, 158, 0.16),
+    inset 0 0 16px rgba(12, 22, 58, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.loading-tip-card:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 0 24px rgba(0, 229, 255, 0.28),
+    0 0 36px rgba(255, 31, 158, 0.22),
+    inset 0 0 16px rgba(12, 22, 58, 0.6);
+}
+
+.loading-tip-card:active {
+  transform: scale(0.985);
+}
+
+.loading-tip-badge {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  color: #00d9f5;
+  text-shadow: 0 0 10px rgba(0, 217, 245, 0.6);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.loading-tip-message {
+  font-family: var(--font-body);
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: #f1f5f9;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+  margin: 0;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+

@@ -47,6 +47,32 @@
         <!-- Top Safe Area Spacer (140px Snapchat Chrome Inset) -->
         <header class="top-safe-inset" aria-hidden="true"></header>
 
+        <!-- SCREEN 0: LOADING SCREEN (Inspiration: glowing neon capsule & game tip, simple navy gradient) -->
+        <section id="loading-screen" class="loading-screen-view" role="status" aria-live="polite">
+          <div class="loading-content-center">
+            <!-- Loading Title -->
+            <div class="loading-title-row">
+              <span class="loading-title" aria-label="Loading">L O A D I N G . . .</span>
+            </div>
+
+            <!-- Capsule Progress Bar -->
+            <div class="loading-capsule-track" aria-label="Loading Progress">
+              <div class="loading-capsule-fill-zone">
+                <div id="loading-bar-fill" class="loading-capsule-fill" style="width: 0%;">
+                  <span class="loading-capsule-gloss"></span>
+                </div>
+              </div>
+              <span id="loading-percent" class="loading-percent-label">0%</span>
+            </div>
+
+            <!-- Game Tip Card -->
+            <div id="loading-tip-card" class="loading-tip-card" title="Tap for next tip">
+              <span class="loading-tip-badge">GAME TIP</span>
+              <p id="loading-tip-text" class="loading-tip-message">Watch the pattern carefully before the tiles flip!</p>
+            </div>
+          </div>
+        </section>
+
         <!-- SCREEN 1: PRE-GAME LOBBY & LEVEL SELECTOR -->
         <section id="lobby-screen" class="screen-view">
           <!-- Personal Best Header Pill + Settings -->
