@@ -217,45 +217,19 @@
 
         <div id="flex-modal" class="flex-card-modal hidden" role="dialog" aria-modal="true" aria-label="Round Summary">
 
-          <!-- Top 3D Celebration Banner -->
+          <!-- Result Wordmark: candy letters matching the lobby COLOR FLIP logo.
+               Letters are (re)built by UI.setFlexTitle() so the entrance replays each round. -->
           <div class="flex-banner-header">
-            <!-- 3D Puffy Left Star -->
-            <svg class="header-star star-left" viewBox="0 0 36 36" width="34" height="34" aria-hidden="true">
-              <defs>
-                <linearGradient id="star-grad-left" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stop-color="#fff899" />
-                  <stop offset="45%" stop-color="#ffca18" />
-                  <stop offset="100%" stop-color="#ff8c00" />
-                </linearGradient>
-                <filter id="star-glow-left" x="-20%" y="-20%" width="140%" height="140%">
-                  <feDropShadow dx="0" dy="3" stdDeviation="2" flood-color="#7a4200" flood-opacity="0.8" />
-                </filter>
-              </defs>
-              <path d="M18 2 L22.4 12.2 L33.4 13.2 L25.1 20.6 L27.5 31.4 L18 25.8 L8.5 31.4 L10.9 20.6 L2.6 13.2 L13.6 12.2 Z"
-                    fill="url(#star-grad-left)" stroke="#ffffff" stroke-width="1.2" stroke-linejoin="round" filter="url(#star-glow-left)" />
-            </svg>
-
-            <!-- 3D Stacked Bubbly Cartoon Title -->
-            <h2 id="flex-title" class="flex-3d-title title-win" aria-label="Board Cleared!">
-              <span id="flex-title-word-1" class="flex-title-word word-board">BOARD</span>
-              <span id="flex-title-word-2" class="flex-title-word word-cleared">CLEARED!</span>
+            <h2 id="flex-title" class="flex-3d-title title-win">
+              <span id="flex-title-sr" class="sr-only">Board cleared!</span>
+              <span class="end-spark es1" aria-hidden="true"></span>
+              <span class="end-spark es2" aria-hidden="true"></span>
+              <span class="end-spark es3" aria-hidden="true"></span>
+              <span class="end-spark es4" aria-hidden="true"></span>
+              <span id="flex-title-word-1" class="flex-title-word word-top" aria-hidden="true"></span>
+              <span id="flex-title-word-2" class="flex-title-word word-main" aria-hidden="true"></span>
             </h2>
-
-            <!-- 3D Puffy Right Star -->
-            <svg class="header-star star-right" viewBox="0 0 36 36" width="34" height="34" aria-hidden="true">
-              <defs>
-                <linearGradient id="star-grad-right" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stop-color="#fff899" />
-                  <stop offset="45%" stop-color="#ffca18" />
-                  <stop offset="100%" stop-color="#ff8c00" />
-                </linearGradient>
-                <filter id="star-glow-right" x="-20%" y="-20%" width="140%" height="140%">
-                  <feDropShadow dx="0" dy="3" stdDeviation="2" flood-color="#7a4200" flood-opacity="0.8" />
-                </filter>
-              </defs>
-              <path d="M18 2 L22.4 12.2 L33.4 13.2 L25.1 20.6 L27.5 31.4 L18 25.8 L8.5 31.4 L10.9 20.6 L2.6 13.2 L13.6 12.2 Z"
-                    fill="url(#star-grad-right)" stroke="#ffffff" stroke-width="1.2" stroke-linejoin="round" filter="url(#star-glow-right)" />
-            </svg>
+            <p id="flex-kicker" class="flex-kicker" aria-hidden="true">ROUND COMPLETE</p>
           </div>
 
           <!-- Avatar Medallion (Perched Over Card Top Edge) -->

@@ -65,6 +65,8 @@ window.addEventListener('DOMContentLoaded', async () => {
       multiplier: 1.0,
       newUnlocks: [],
     });
+  } else if (urlParams.get('preview') === 'timeup') {
+    ui.showFlexCard({ status: 'TIME_UP' });
   }
 
   console.log('Color Flip Web Lens ready!');

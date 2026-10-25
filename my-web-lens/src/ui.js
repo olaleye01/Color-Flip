@@ -47,6 +47,8 @@ export class UIController {
     this.flexTitle = document.getElementById('flex-title');
     this.flexTitleWord1 = document.getElementById('flex-title-word-1');
     this.flexTitleWord2 = document.getElementById('flex-title-word-2');
+    this.flexTitleSr = document.getElementById('flex-title-sr');
+    this.flexKicker = document.getElementById('flex-kicker');
     this.flexAvatar = document.getElementById('flex-avatar');
     this.flexScore = document.getElementById('flex-score');
     this.flexPbBadge = document.getElementById('flex-pb-badge');
@@ -236,6 +238,38 @@ export class UIController {
     }
   }
 
+  // Result wordmark: builds candy letters in the same structure as the lobby logo
+  // (.tl wrapper for idle motion, inner span for the staggered entrance).
+  setFlexTitle(variant) {
+    const isWin = variant === 'win';
+    const top = isWin ? 'BOARD' : 'TIME’S';
+    const main = isWin ? 'CLEARED!' : 'UP!';
+    const palette = ['pk', 'cy', 'yl', 'pu'];
+
+    const build = (el, text, offset, colored) => {
+      if (!el) return;
+      el.replaceChildren(
+        ...[...text].map((ch, i) => {
+          const outer = document.createElement('span');
+          outer.className = colored ? `tl ${isWin ? palette[i % palette.length] : 'cr'}` : 'tl';
+          outer.style.setProperty('--letter', String(i + offset));
+          const inner = document.createElement('span');
+          inner.textContent = ch;
+          outer.appendChild(inner);
+          return outer;
+        })
+      );
+    };
+
+    build(this.flexTitleWord1, top, 0, false);
+    build(this.flexTitleWord2, main, top.length, true);
+
+    this.flexTitle.classList.toggle('title-win', isWin);
+    this.flexTitle.classList.toggle('title-loss', !isWin);
+    if (this.flexTitleSr) this.flexTitleSr.textContent = isWin ? 'Board cleared!' : 'Time’s up!';
+    if (this.flexKicker) this.flexKicker.textContent = isWin ? 'ROUND COMPLETE' : 'ROUND OVER';
+  }
+
   // Flex Card Modal
   showFlexCard(payload) {
     this.stage.classList.add('showing-results');
@@ -249,10 +283,7 @@ export class UIController {
       // One-time celebratory confetti cannon burst on board cleared
       this.confetti.burst();
 
-      if (this.flexTitleWord1) this.flexTitleWord1.textContent = 'BOARD';
-      if (this.flexTitleWord2) this.flexTitleWord2.textContent = 'CLEARED!';
-      this.flexTitle.classList.remove('title-loss');
-      this.flexTitle.classList.add('title-win');
+      this.setFlexTitle('win');
       this.flexModal.setAttribute('aria-label', 'Board cleared. Round summary');
       this.flexPbBadge.classList.toggle('hidden', !payload.isNewHighScore);
 
@@ -296,10 +327,7 @@ export class UIController {
         this.flexUnlocks.classList.add('hidden');
       }
     } else {
-      if (this.flexTitleWord1) this.flexTitleWord1.textContent = "TIME'S";
-      if (this.flexTitleWord2) this.flexTitleWord2.textContent = "UP!";
-      this.flexTitle.classList.remove('title-win');
-      this.flexTitle.classList.add('title-loss');
+      this.setFlexTitle('loss');
       this.flexModal.setAttribute('aria-label', 'Time’s up. Round summary');
       this.flexPbBadge.classList.add('hidden');
       this.flexScore.textContent = '0';
