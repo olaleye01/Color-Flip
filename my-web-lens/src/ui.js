@@ -59,7 +59,6 @@ export class UIController {
     this.flexUnlocks = document.getElementById('flex-unlocks');
     this.btnFlexPlayAgain = document.getElementById('btn-flex-play-again');
     this.btnFlexPlayText = document.getElementById('btn-flex-play-text');
-    this.btnFlexLeaderboard = document.getElementById('btn-flex-leaderboard');
     this.btnFlexChangeLevel = document.getElementById('btn-flex-change-level');
 
     this.wireEvents();
@@ -105,9 +104,6 @@ export class UIController {
     this.btnFlexPlayAgain.addEventListener('click', () => {
       this.closeFlexCard();
       this.game.startRound();
-    });
-    this.btnFlexLeaderboard.addEventListener('click', () => {
-      showNativeLeaderboard();
     });
     this.btnFlexChangeLevel.addEventListener('click', () => {
       this.closeFlexCard();

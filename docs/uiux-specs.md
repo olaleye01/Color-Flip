@@ -163,9 +163,8 @@ When the 8th pair is matched (or time expires), a rich celebration card animates
 |   - - - |  PLAY AGAIN ▶   | - - -     | <-- Glossy 3D Yellow Capsule CTA
 |   / / / +-----------------+ \ \ \     |     (With Flanking Ray Bursts)
 |                                       |
-|   < [Trophy] VIEW FRIEND LEADERBOARD >| <-- Glossy Royal Blue Capsule CTA
-|                                       |
 |             BACK TO LOBBY             | <-- Cyan Secondary Text Link
+|                                       |
 +---------------------------------------+
 ```
 

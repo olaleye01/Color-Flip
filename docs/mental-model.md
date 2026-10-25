@@ -143,7 +143,7 @@ Tiles feature the iconic **Classic Snap yellow ghost emblem** on the navy face-d
    * **Bottom Bar:** Dynamic streak bar (`2x STREAK (+500 PTS)`) and quick `RESTART` pill.
 4. **Post-Game 3D Celebration Flex Card:**
    * Animated trading-card modal showing **"BOARD CLEARED!"**, avatar medallion, retro synthwave perspective grid, and breakdown (Time Left, Flips Efficiency, Streak Bonus).
-   * CTAs: **"PLAY AGAIN ▶"**, **"< VIEW FRIEND LEADERBOARD >"**, and **"BACK TO LOBBY"**.
+   * CTAs: **"PLAY AGAIN ▶"** and **"BACK TO LOBBY"**.
 
 ---
 
