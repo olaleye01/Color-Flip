@@ -38,6 +38,19 @@ export class UIController {
     this.streakBar = document.getElementById('streak-bar');
     this.streakText = document.getElementById('streak-text');
     this.btnRestart = document.getElementById('btn-restart');
+    this.btnPause = document.getElementById('btn-pause');
+
+    // Pause Menu Elements
+    this.pauseModal = document.getElementById('pause-modal');
+    this.pauseModalOverlay = document.getElementById('pause-modal-overlay');
+    this.btnPauseResume = document.getElementById('btn-pause-resume');
+    this.btnPauseRestart = document.getElementById('btn-pause-restart');
+    this.btnPauseSound = document.getElementById('btn-pause-sound');
+    this.pauseSoundBadge = document.getElementById('pause-sound-badge');
+    this.btnPauseLobby = document.getElementById('btn-pause-lobby');
+    this.pauseStatTime = document.getElementById('pause-stat-time');
+    this.pauseStatPairs = document.getElementById('pause-stat-pairs');
+    this.pauseStatFlips = document.getElementById('pause-stat-flips');
 
     // Flex Card Modal Elements
     this.flexModal = document.getElementById('flex-modal');
@@ -92,9 +105,81 @@ export class UIController {
       this.game.startRound();
     });
 
-    // Quick Restart in HUD
-    this.btnRestart.addEventListener('click', () => {
-      this.game.quickRestart();
+    // In-Game Pause Trigger
+    if (this.btnPause) {
+      this.btnPause.addEventListener('click', () => {
+        this.openPauseMenu();
+      });
+    }
+
+    // Quick Restart in HUD (fallback if present)
+    if (this.btnRestart) {
+      this.btnRestart.addEventListener('click', () => {
+        this.game.quickRestart();
+      });
+    }
+
+    // Pause Modal card click - stop propagation so clicks inside card never bubble to backdrop
+    if (this.pauseModal) {
+      this.pauseModal.addEventListener('click', (e) => {
+        e.stopPropagation();
+      });
+    }
+
+    // Pause Menu Modal Actions
+    if (this.btnPauseResume) {
+      this.btnPauseResume.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.closePauseMenu(true);
+      });
+    }
+
+    if (this.btnPauseRestart) {
+      this.btnPauseRestart.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.closePauseMenu(false);
+        this.game.quickRestart();
+      });
+    }
+
+    if (this.btnPauseSound) {
+      this.btnPauseSound.addEventListener('click', (e) => {
+        e.stopPropagation();
+        sound.muted = !sound.muted;
+        try {
+          localStorage.setItem(SOUND_PREF_KEY, sound.muted ? '1' : '0');
+        } catch (e) {
+          /* ignore */
+        }
+        this.syncSoundButton();
+      });
+    }
+
+    if (this.btnPauseLobby) {
+      this.btnPauseLobby.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.closePauseMenu(false);
+        this.game.returnToLobby();
+      });
+    }
+
+    if (this.pauseModalOverlay) {
+      this.pauseModalOverlay.addEventListener('click', (e) => {
+        if (e.target === this.pauseModalOverlay || e.target.classList.contains('pause-modal-spotlight-beam')) {
+          this.closePauseMenu(true);
+        }
+      });
+    }
+
+    // Keyboard support: Escape or 'P' to pause/resume
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' || e.key === 'p' || e.key === 'P') {
+        if (this.isPauseMenuOpen()) {
+          this.closePauseMenu(true);
+        } else if (this.game.state === GAME_STATES.PLAYING) {
+          this.openPauseMenu();
+        }
+      }
     });
 
     // Native Snapchat Leaderboards CTA
@@ -114,12 +199,23 @@ export class UIController {
   }
 
   syncSoundButton() {
-    if (!this.btnSound) return;
-    this.btnSound.classList.toggle('is-muted', sound.muted);
-    this.btnSound.setAttribute('aria-pressed', String(sound.muted));
-    this.btnSound.setAttribute('aria-label', sound.muted ? 'Sound muted — tap to unmute' : 'Sound active — tap to mute');
-    const badge = document.getElementById('sound-state-badge');
-    if (badge) badge.textContent = sound.muted ? 'MUTED' : 'ON';
+    if (this.btnSound) {
+      this.btnSound.classList.toggle('is-muted', sound.muted);
+      this.btnSound.setAttribute('aria-pressed', String(sound.muted));
+      this.btnSound.setAttribute('aria-label', sound.muted ? 'Sound muted — tap to unmute' : 'Sound active — tap to mute');
+      const badge = document.getElementById('sound-state-badge');
+      if (badge) badge.textContent = sound.muted ? 'MUTED' : 'ON';
+    }
+
+    if (this.btnPauseSound) {
+      this.btnPauseSound.classList.toggle('is-muted', sound.muted);
+      this.btnPauseSound.setAttribute('aria-pressed', String(sound.muted));
+      this.btnPauseSound.setAttribute('aria-label', sound.muted ? 'Sound muted — tap to unmute' : 'Sound active — tap to mute');
+      if (this.pauseSoundBadge) {
+        this.pauseSoundBadge.textContent = sound.muted ? 'MUTED' : 'ON';
+        this.pauseSoundBadge.classList.toggle('is-muted', sound.muted);
+      }
+    }
   }
 
   wireGameCallbacks() {
@@ -213,7 +309,53 @@ export class UIController {
     }, durationMs);
   }
 
+  isPauseMenuOpen() {
+    return Boolean(this.pauseModal && !this.pauseModal.classList.contains('hidden'));
+  }
+
+  openPauseMenu() {
+    if (this.game.state !== GAME_STATES.PLAYING || this.game.isPaused) return;
+    this.game.pause();
+    sound.playTone(360, 'triangle', 0.1, 0.15);
+
+    // Populate live snapshot values
+    if (this.pauseStatTime) {
+      this.pauseStatTime.textContent = `${this.game.timeLeft.toFixed(1)}s`;
+    }
+    if (this.pauseStatPairs) {
+      this.pauseStatPairs.textContent = `${this.game.matchedPairs} / 8`;
+    }
+    if (this.pauseStatFlips) {
+      this.pauseStatFlips.textContent = String(this.game.flipsCount);
+    }
+
+    this.syncSoundButton();
+    this.stage?.classList.add('is-paused');
+    this.hudScreen.inert = true;
+    this.pauseModal?.classList.remove('hidden');
+    this.pauseModalOverlay?.classList.remove('hidden');
+    this.btnPauseResume?.focus();
+  }
+
+  closePauseMenu(andResume = true) {
+    if (!this.isPauseMenuOpen()) return;
+
+    this.pauseModal?.classList.add('hidden');
+    this.pauseModalOverlay?.classList.add('hidden');
+    this.hudScreen.inert = false;
+    this.stage?.classList.remove('is-paused');
+
+    if (andResume) {
+      this.game.resume();
+      sound.playTone(520, 'triangle', 0.1, 0.15);
+    }
+  }
+
   renderState(state) {
+    if (state !== GAME_STATES.PLAYING) {
+      this.closePauseMenu(false);
+    }
+
     if (this.stage) {
       this.stage.classList.toggle('in-game', state !== GAME_STATES.LOBBY);
       this.stage.classList.toggle('preparing', [GAME_STATES.SHUFFLE, GAME_STATES.PEEK, GAME_STATES.CASCADE].includes(state));
@@ -272,6 +414,7 @@ export class UIController {
 
   // Flex Card Modal
   showFlexCard(payload) {
+    this.closePauseMenu(false);
     this.stage.classList.add('showing-results');
     this.lobbyScreen.inert = true;
     this.hudScreen.inert = true;

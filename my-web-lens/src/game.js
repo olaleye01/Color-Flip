@@ -30,6 +30,7 @@ export class GameEngine {
     this.streakBonusTotal = 0;
     this.firstPickIndex = null;
     this.isProcessingTurn = false;
+    this.isPaused = false;
 
     // Timers
     this.gameLoopTimer = null;
@@ -80,6 +81,7 @@ export class GameEngine {
     sound.stopShuffleSequence();
 
     // Reset round metrics
+    this.isPaused = false;
     this.timeLeft = 60.0;
     this.flipsCount = 0;
     this.matchedPairs = 0;
@@ -348,26 +350,38 @@ export class GameEngine {
   }
 
   quickRestart() {
+    this.isPaused = false;
     this.startRound();
   }
 
   pause() {
+    if (this.state !== GAME_STATES.PLAYING || this.isPaused) return false;
+    this.isPaused = true;
+    this.board.isInputLocked = true;
     if (this.gameLoopTimer) {
       cancelAnimationFrame(this.gameLoopTimer);
       this.gameLoopTimer = null;
     }
     sound.stopShuffleSequence();
+    return true;
   }
 
   resume() {
-    if (this.state === GAME_STATES.PLAYING && !this.gameLoopTimer) {
+    if (!this.isPaused) return false;
+    this.isPaused = false;
+    if (this.state === GAME_STATES.PLAYING) {
+      if (!this.isProcessingTurn) {
+        this.board.isInputLocked = false;
+      }
       // Clamp/reset timestamp to prevent catch-up delta burst on 120Hz or background return
       this.lastTimestamp = performance.now();
       this.startGameLoop();
     }
+    return true;
   }
 
   returnToLobby() {
+    this.isPaused = false;
     if (this.gameLoopTimer) cancelAnimationFrame(this.gameLoopTimer);
     sound.stopShuffleSequence();
 
