@@ -3,6 +3,7 @@
 import { getSaveState, getBitmojiUrl, isCapabilitySupported, showNativeLeaderboard } from './snapchat.js';
 import { GAME_STATES } from './game.js';
 import { sound } from './audio.js';
+import { ConfettiCannon } from './confetti.js';
 
 const SOUND_PREF_KEY = 'colorflip_muted';
 
@@ -41,6 +42,8 @@ export class UIController {
     // Flex Card Modal Elements
     this.flexModal = document.getElementById('flex-modal');
     this.flexModalOverlay = document.getElementById('flex-modal-overlay');
+    this.flexConfettiCanvas = document.getElementById('flex-confetti-canvas');
+    this.confetti = new ConfettiCannon(this.flexConfettiCanvas);
     this.flexTitle = document.getElementById('flex-title');
     this.flexTitleWord1 = document.getElementById('flex-title-word-1');
     this.flexTitleWord2 = document.getElementById('flex-title-word-2');
@@ -247,6 +250,9 @@ export class UIController {
     this.flexModalOverlay.classList.remove('hidden');
 
     if (payload.status === 'VICTORY') {
+      // One-time celebratory confetti cannon burst on board cleared
+      this.confetti.burst();
+
       if (this.flexTitleWord1) this.flexTitleWord1.textContent = 'BOARD';
       if (this.flexTitleWord2) this.flexTitleWord2.textContent = 'CLEARED!';
       this.flexTitle.classList.remove('title-loss');
@@ -318,6 +324,7 @@ export class UIController {
   }
 
   closeFlexCard() {
+    this.confetti.stop();
     this.stage.classList.remove('showing-results');
     this.lobbyScreen.inert = false;
     this.hudScreen.inert = false;
