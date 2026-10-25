@@ -120,7 +120,7 @@ Designed for zero visual clutter so the player's peripheral vision stays locked 
 |  | [Flame] 3x STREAK (+750 PTS)    |  | <-- Dynamic Streak Bar
 |  +---------------------------------+  |
 |                                       |
-|            ( RESTART )                | <-- Quick Thumb Reset Pill
+|            (   PAUSE   )              | <-- Quick Thumb Pause Pill (#btn-pause)
 |                                       |
 +---------------------------------------+
 ```
@@ -128,7 +128,49 @@ Designed for zero visual clutter so the player's peripheral vision stays locked 
 * **Pod 1 — Live Bitmoji Spectator (Top Left):** Displays the player's Bitmoji avatar (or fallback). Glows Cyan when `streak >= 2` and pulses Crimson when `timer <= 10.0s`.
 * **Pod 2 — Precision Countdown Timer (Top Center):** `64px` tabular bold font displaying tenths of a second (`48.6`). Pulses crimson at `10.0s`.
 * **Pod 3 — Flip Efficiency Counter (Top Right):** Displays total individual tile taps (`FLIPS: 12`).
-* **Bottom Controls:** Dynamic streak meter and quick `RESTART` pill that immediately restarts a fresh shuffle.
+* **Bottom Controls:** Dynamic streak meter and quick `PAUSE` pill right under resting thumb that freezes the clock and opens the Pause Menu modal.
+
+---
+
+### Screen 3.5: Pause Menu Modal (Round On Hold)
+An arcade glassmorphic modal that freezes game time and board input while keeping the active board state intact.
+
+```text
++---------------------------------------+
+|                                       |
+|        +-----------------+            |
+|        |  ( || ) PAUSE   |            | <-- Neon Glow Pause Medallion
+|   +----+-----------------+----+       |
+|   |       ROUND ON HOLD       |       | <-- Cyan Letter-Spaced Kicker
+|   |         P A U S E D       |       | <-- 3D Candy Wordmark + Sparks
+|   |  Catch your breath! The   |       |
+|   |  timer is frozen while... |       | <-- Friendly Arcade Tagline
+|   |                                   |
+|   |  +---------+ +-----+ +---------+  |
+|   |  | 48.6s   | | 3/8 | | 12      |  | <-- Live In-Game Snapshot Strip
+|   |  |TIME LEFT| |PAIRS| |FLIPS    |  |
+|   |  +---------+ +-----+ +---------+  |
+|   |                                   |
+|   |   +---------------------------+   |
+|   |   |        R E S U M E  ▶     |   | <-- Primary Snap Yellow Hero CTA
+|   |   +---------------------------+   |
+|   |                                   |
+|   |   +-----------+ +-------------+   |
+|   |   | (⟳)RESTART| | (🔊)SOUND ON|   | <-- Secondary Controls Row
+|   |   +-----------+ +-------------+   |
+|   |                                   |
+|   |           QUIT TO LOBBY           | <-- Sky Blue Exit Link
+|   |   [PRO TIP: Streak Bonus Hint]    | <-- Subtle Strategy Footer
+|   +-----------------------------------+
++---------------------------------------+
+```
+
+* **Live In-Game Snapshot Strip:** Displays real-time frozen metrics (Time Left, Matched Pairs, Flips Made).
+* **Primary CTA ("RESUME ▶"):** Glossy 3D Snap Yellow capsule button with depression feedback, unpausing the game and restarting the game loop.
+* **Secondary Action ("RESTART"):** Restarts the board with a fresh 2.5s color shuffle and 1.5s memorization peek.
+* **Sound Control ("SOUND"):** Toggles sound FX between `ON` and `MUTED`, keeping localStorage preferences and lobby button in sync.
+* **Secondary Exit ("QUIT TO LOBBY"):** Safely abandons the round and returns camera and board to lobby idle state.
+* **Keyboard Shortcuts:** `Escape` or `P` key triggers pause and resume.
 
 ---
 
