@@ -135,7 +135,7 @@ export class GameEngine {
       sound.playLockInPeek();
 
       if (this.onPhaseBanner) {
-        this.onPhaseBanner('MEMORIZE! 1.5s', 'peek', 1500);
+        this.onPhaseBanner('MEMORIZE!', 'peek', 1500);
       }
 
       // PHASE 3: Cascade Flip-Down (0.4s) after 1.5s peek

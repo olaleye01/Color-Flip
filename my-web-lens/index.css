@@ -699,6 +699,7 @@ button:focus-visible {
   gap: 12px;
   width: 100%;
   max-width: 300px;
+  margin-top: clamp(0.75rem, 2cqh, 1.25rem);
 }
 
 .btn-secondary-pill {
@@ -1792,6 +1793,7 @@ button:focus-visible {
   padding: 4px 8px;
   cursor: pointer;
   transition: color 0.15s ease, text-shadow 0.15s ease;
+  margin-top: clamp(0.75rem, 2cqh, 1.25rem);
 }
 
 .btn-flex-lobby-link:hover,
