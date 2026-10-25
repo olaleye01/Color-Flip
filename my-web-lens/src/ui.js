@@ -1,6 +1,5 @@
 // src/ui.js
 // UI Controller for Color Flip (HTML/CSS Overlay Layer)
-import { EMBLEM_SKINS } from './palette.js';
 import { getSaveState, getBitmojiUrl, isCapabilitySupported, showNativeLeaderboard } from './snapchat.js';
 import { GAME_STATES } from './game.js';
 import { sound } from './audio.js';
@@ -25,7 +24,6 @@ export class UIController {
     this.lobbyAvatar = document.getElementById('lobby-avatar');
     this.btnPlay = document.getElementById('btn-play');
     this.btnOpenLeaderboard = document.getElementById('btn-leaderboard');
-    this.btnOpenSkins = document.getElementById('btn-skins');
     this.btnSound = document.getElementById('btn-sound') || document.getElementById('btn-settings');
 
     // HUD Elements
@@ -39,12 +37,6 @@ export class UIController {
     this.streakBar = document.getElementById('streak-bar');
     this.streakText = document.getElementById('streak-text');
     this.btnRestart = document.getElementById('btn-restart');
-
-    // Skin Drawer Elements
-    this.skinDrawer = document.getElementById('skin-drawer');
-    this.skinDrawerOverlay = document.getElementById('skin-drawer-overlay');
-    this.btnCloseSkins = document.getElementById('btn-close-skins');
-    this.skinListContainer = document.getElementById('skin-list');
 
     // Flex Card Modal Elements
     this.flexModal = document.getElementById('flex-modal');
@@ -100,15 +92,6 @@ export class UIController {
     this.btnRestart.addEventListener('click', () => {
       this.game.quickRestart();
     });
-
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && !this.skinDrawer.classList.contains('hidden')) this.closeSkinDrawer();
-    });
-
-    // Skin Drawer Open/Close
-    this.btnOpenSkins.addEventListener('click', () => this.openSkinDrawer());
-    this.btnCloseSkins.addEventListener('click', () => this.closeSkinDrawer());
-    this.skinDrawerOverlay.addEventListener('click', () => this.closeSkinDrawer());
 
     // Native Snapchat Leaderboards CTA
     this.btnOpenLeaderboard.addEventListener('click', () => {
@@ -252,71 +235,6 @@ export class UIController {
         this.hudLevelBadge.textContent = 'SOLID MODE';
       }
     }
-  }
-
-  // Skin Drawer Modal
-  openSkinDrawer() {
-    this.skinDrawer.classList.remove('hidden');
-    this.skinDrawerOverlay.classList.remove('hidden');
-    this.renderSkinList();
-    this.btnCloseSkins.focus();
-    this.lobbyScreen.inert = true;
-  }
-
-  closeSkinDrawer() {
-    this.skinDrawer.classList.add('hidden');
-    this.skinDrawerOverlay.classList.add('hidden');
-    this.lobbyScreen.inert = false;
-    this.btnOpenSkins.focus();
-  }
-
-  renderSkinList() {
-    const save = getSaveState();
-    this.skinListContainer.innerHTML = '';
-
-    EMBLEM_SKINS.forEach((skin) => {
-      const isEquipped = this.game.equippedSkinId === skin.id;
-      const isUnlocked = skin.unlockedByDefault || skin.checkUnlock(save);
-
-      const card = document.createElement('div');
-      card.className = `skin-card glass-card ${isEquipped ? 'equipped' : ''} ${!isUnlocked ? 'locked' : ''}`;
-
-      card.innerHTML = `
-        <div class="skin-badge-container">
-          <div class="skin-icon-box">
-            ${
-              skin.key === 'classic'
-                ? `<svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M12 2C7.58 2 4 5.58 4 10c0 3.08 1.74 5.76 4.3 7.07-.15.42-.3.9-.3 1.43 0 .83.67 1.5 1.5 1.5h5c.83 0 1.5-.67 1.5-1.5 0-.53-.15-1.01-.3-1.43 2.56-1.31 4.3-3.99 4.3-7.07 0-4.42-3.58-8-8-8z"/></svg>`
-                : skin.key === 'neon'
-                ? `<svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 22h20L12 2z"/></svg>`
-                : skin.key === 'gold'
-                ? `<svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><circle cx="12" cy="12" r="9"/></svg>`
-                : `<img src="${getBitmojiUrl()}" class="skin-bitmoji-icon" alt="Bitmoji" />`
-            }
-          </div>
-          <div class="skin-name">${skin.name}</div>
-          <div class="skin-desc">${skin.description}</div>
-        </div>
-        <div class="skin-footer">
-          ${
-            isEquipped
-              ? `<span class="badge-equipped"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" style="display:inline-block;vertical-align:middle;margin-right:4px;"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>EQUIPPED</span>`
-              : isUnlocked
-              ? `<button class="btn-equip">EQUIP</button>`
-              : `<span class="badge-locked"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" style="display:inline-block;vertical-align:middle;margin-right:4px;"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>${skin.condition}</span>`
-          }
-        </div>
-      `;
-
-      if (isUnlocked && !isEquipped) {
-        card.querySelector('.btn-equip').addEventListener('click', () => {
-          this.game.equipSkin(skin.id);
-          this.renderSkinList();
-        });
-      }
-
-      this.skinListContainer.appendChild(card);
-    });
   }
 
   // Flex Card Modal

@@ -17,8 +17,8 @@
       rel="stylesheet"
     />
 
-    <script type="module" crossorigin src="./assets/index-Bug-1ljF.js"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-DYN6OBj9.css">
+    <script type="module" crossorigin src="./assets/index-OLWYDULm.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-PBVpDov2.css">
   </head>
   <body>
     <!-- App Container (9:16 Vertical Safe Ratio on Mobile, Centered Mobile Stage on Desktop) -->
@@ -92,14 +92,14 @@
               <span class="logo-spark s2"></span>
               <span class="logo-spark s3"></span>
               <span class="logo-spark s4"></span>
-              <span class="logo-word logo-color" aria-hidden="true">COLOR</span>
+              <span class="logo-word logo-color" aria-hidden="true"><span class="color-letter" style="--letter: 0">C</span><span class="color-letter" style="--letter: 1">O</span><span class="color-letter" style="--letter: 2">L</span><span class="color-letter" style="--letter: 3">O</span><span class="color-letter" style="--letter: 4">R</span></span>
               <span class="logo-flip-row" aria-hidden="true">
                 <svg class="flip-arrow arrow-left" viewBox="0 0 40 60" width="28" height="44">
                   <path d="M30 6 C10 14 8 42 26 54" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" />
                   <path d="M18 4 L34 4 L26 18 Z" fill="currentColor" transform="rotate(-20 26 8)" />
                 </svg>
                 <span class="logo-word logo-flip">
-                  <span class="fl f">F</span><span class="fl l">L</span><span class="fl i">I</span><span class="fl p">P</span>
+                  <span class="fl f" style="--letter: 0"><span>F</span></span><span class="fl l" style="--letter: 1"><span>L</span></span><span class="fl i" style="--letter: 2"><span>I</span></span><span class="fl p" style="--letter: 3"><span>P</span></span>
                 </span>
                 <svg class="flip-arrow arrow-right" viewBox="0 0 40 60" width="28" height="44">
                   <path d="M10 54 C30 46 32 18 14 6" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" />
@@ -115,6 +115,8 @@
 
           <!-- Bottom Action Zone -->
           <div class="lobby-actions-bottom">
+            <p class="play-hint">Remember the colors. Find every pair.</p>
+            <div class="round-facts"><span><strong>16</strong> tiles</span><span><strong>8</strong> pairs</span><span><strong>60</strong> seconds</span></div>
             <!-- Primary Play CTA -->
             <div class="play-cta-wrap">
               <span class="cta-tick t-left-a"></span>
@@ -136,20 +138,6 @@
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
                 <span>LEADERBOARD</span>
-                <svg class="chev" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-
-              <button id="btn-skins" class="btn-secondary-pill" aria-label="Customize Tile Back Skins">
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M12 3a9 9 0 000 18c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16a5 5 0 005-5c0-4.42-4.03-8-9-8z" />
-                  <circle cx="7.5" cy="11.5" r="1.2" fill="currentColor" stroke="none" />
-                  <circle cx="10" cy="7.5" r="1.2" fill="currentColor" stroke="none" />
-                  <circle cx="14.5" cy="7.5" r="1.2" fill="currentColor" stroke="none" />
-                  <circle cx="17" cy="11" r="1.2" fill="currentColor" stroke="none" />
-                </svg>
-                <span>TILE SKIN</span>
                 <svg class="chev" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
                 </svg>
@@ -202,6 +190,7 @@
           <!-- Sub Badge Row -->
           <div class="hud-sub-badge-row">
             <div id="hud-level-badge" class="hud-mult-pill">SOLID MODE</div>
+            <span id="hud-pairs" class="pairs-progress" aria-live="polite">0 / 8 pairs</span>
           </div>
 
           <!-- Middle Viewport Spacer (Keeps 3D Board Clear) -->
@@ -222,21 +211,7 @@
           </div>
         </section>
 
-        <!-- SCREEN 4: TILE SKIN DRAWER (MODAL BOTTOM SHEET) -->
-        <div id="skin-drawer-overlay" class="modal-backdrop hidden"></div>
-        <div id="skin-drawer" class="bottom-sheet-drawer hidden" role="dialog" aria-modal="true" aria-label="Tile Skin Selector">
-          <div class="drawer-header">
-            <h3 class="drawer-title">SELECT TILE EMBLEM</h3>
-            <button id="btn-close-skins" class="btn-close-icon" aria-label="Close Skins Drawer">
-              <svg viewBox="0 0 24 24" width="22" height="22" stroke="currentColor" stroke-width="2.5" fill="none">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-          <div id="skin-list" class="skin-list-grid"></div>
-        </div>
-
-        <!-- SCREEN 5: POST-GAME CELEBRATION / FLEX CARD MODAL -->
+        <!-- SCREEN 4: POST-GAME CELEBRATION / FLEX CARD MODAL -->
         <div id="flex-modal-overlay" class="modal-backdrop hidden" aria-hidden="true">
           <div class="flex-modal-spotlight-beam" aria-hidden="true"></div>
         </div>
@@ -408,7 +383,7 @@
                       <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
                     </svg>
                   </div>
-                  <span class="breakdown-label">Flips Efficiency</span>
+                  <span class="breakdown-label">Flip efficiency</span>
                 </div>
                 <div class="breakdown-value-col">
                   <span id="flex-flip-bonus" class="pts-val">+0 pts</span>

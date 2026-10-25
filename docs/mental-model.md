@@ -98,14 +98,10 @@ $$\text{Final Score} = \text{Base Score} = (\text{Seconds Left} \times 100) + \m
 
 ---
 
-## 5. Progression System & Cosmetic Emblems
+## 5. Progression System & Tile Emblems
 
-### Cosmetic Tile Backs (Center Emblem Skins)
-Players customize the **center emblem on the face-down side of the tiles** by achieving gameplay milestones:
-1. **Classic Snap Emblem:** Default starting tile back featuring the iconic ghost outline.
-2. **Neon Prism Crest:** Unlocked after **5 total wins**.
-3. **24K Gold Foil Emblem:** Unlocked by clearing any board in **18 flips or fewer** (9 turns—mastering the 1.5s peek).
-4. **Bitmoji Stamp:** Unlocked after **10 total wins** OR clearing a board in **16 flips or fewer** (stamps the player's personal Bitmoji avatar on the back of every tile).
+### Tile Back Design (Classic Snap Emblem)
+Tiles feature the iconic **Classic Snap yellow ghost emblem** on the navy face-down side of every tile, maintaining a focused and consistent arcade presentation.
 
 ---
 
@@ -135,7 +131,7 @@ Players customize the **center emblem on the face-down side of the tiles** by ac
    * Bold extruded title logo ("COLOR FLIP").
    * **Unobstructed View:** The 3D 4x4 board sits angled in the center, gently rotating in preview mode without any overlapping category cards, arrows, or level selectors.
    * Prominent Snapchat Yellow **"PLAY ▶"** CTA button.
-   * Secondary action pills: **"LEADERBOARD"** and **"TILE SKIN"**.
+   * Centralized secondary action pill: **"LEADERBOARD"**.
 2. **Post-"Play" Shuffle & Peek Sequence (~4.0 Seconds Total):**
    * **0.0s – 2.5s (Shuffle):** Clicking **"Play"** hides the lobby UI. Status banner shows **"SHUFFLING COLORS..."** while colors scramble rapidly across all 16 face-up tiles.
    * **2.5s – 4.0s (Memorization Lock-In):** Layout snaps into position. Banner displays **"MEMORIZE! 1.5s"** with a rapid progress depletion bar.
@@ -147,7 +143,6 @@ Players customize the **center emblem on the face-down side of the tiles** by ac
    * **Bottom Bar:** Dynamic streak bar (`2x STREAK (+500 PTS)`) and quick `RESTART` pill.
 4. **Post-Game 3D Celebration Flex Card:**
    * Animated trading-card modal showing **"BOARD CLEARED!"**, avatar medallion, retro synthwave perspective grid, and breakdown (Time Left, Flips Efficiency, Streak Bonus).
-   * Displays unlocked skin milestone toasts if earned.
    * CTAs: **"PLAY AGAIN ▶"**, **"< VIEW FRIEND LEADERBOARD >"**, and **"BACK TO LOBBY"**.
 
 ---

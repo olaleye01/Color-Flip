@@ -146,114 +146,28 @@ function drawEmblemCanvas(ctx, width, height, skinId, bitmojiImageElement) {
   const cx = width / 2;
   const cy = height / 2 - 2;
 
-  if (skinId === 0) {
-    // 1. Classic Snap Emblem
-    // Yellow glowing Ghost-style crest
-    ctx.fillStyle = 'rgba(255, 252, 0, 0.15)';
-    ctx.beginPath();
-    ctx.arc(cx, cy, 64, 0, Math.PI * 2);
-    ctx.fill();
+  // Default: Classic Snap Ghost Emblem
+  ctx.fillStyle = 'rgba(255, 252, 0, 0.15)';
+  ctx.beginPath();
+  ctx.arc(cx, cy, 64, 0, Math.PI * 2);
+  ctx.fill();
 
-    ctx.strokeStyle = '#FFFC00';
-    ctx.lineWidth = 5;
-    ctx.beginPath();
-    ctx.arc(cx, cy, 60, 0, Math.PI * 2);
-    ctx.stroke();
+  ctx.strokeStyle = '#FFFC00';
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  ctx.arc(cx, cy, 60, 0, Math.PI * 2);
+  ctx.stroke();
 
-    // Ghost body silhouette
-    ctx.fillStyle = '#FFFC00';
-    ctx.beginPath();
-    ctx.arc(cx, cy - 14, 26, Math.PI, 0, false);
-    ctx.lineTo(cx + 26, cy + 22);
-    // Wavy bottom
-    ctx.bezierCurveTo(cx + 18, cy + 30, cx + 8, cy + 22, cx, cy + 28);
-    ctx.bezierCurveTo(cx - 8, cy + 22, cx - 18, cy + 30, cx - 26, cy + 22);
-    ctx.closePath();
-    ctx.fill();
-  } else if (skinId === 1) {
-    // 2. Neon Prism Crest (5 Wins)
-    // Cyan & Magenta neon diamond crest
-    ctx.strokeStyle = '#00E5FF';
-    ctx.lineWidth = 4;
-    ctx.shadowColor = '#00E5FF';
-    ctx.shadowBlur = 12;
-
-    ctx.beginPath();
-    ctx.moveTo(cx, cy - 65);
-    ctx.lineTo(cx + 65, cy);
-    ctx.lineTo(cx, cy + 65);
-    ctx.lineTo(cx - 65, cy);
-    ctx.closePath();
-    ctx.stroke();
-
-    ctx.strokeStyle = '#FF00A0';
-    ctx.shadowColor = '#FF00A0';
-    ctx.lineWidth = 3;
-    ctx.beginPath();
-    ctx.moveTo(cx, cy - 40);
-    ctx.lineTo(cx + 40, cy);
-    ctx.lineTo(cx, cy + 40);
-    ctx.lineTo(cx - 40, cy);
-    ctx.closePath();
-    ctx.stroke();
-
-    ctx.shadowBlur = 0;
-  } else if (skinId === 2) {
-    // 3. 24K Gold Foil Emblem (≤18 Flips)
-    const goldGrad = ctx.createRadialGradient(cx, cy, 10, cx, cy, 75);
-    goldGrad.addColorStop(0, '#FFE875');
-    goldGrad.addColorStop(0.6, '#D4AF37');
-    goldGrad.addColorStop(1, '#996515');
-
-    ctx.fillStyle = goldGrad;
-    ctx.beginPath();
-    ctx.arc(cx, cy, 64, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.strokeStyle = '#FFF3A3';
-    ctx.lineWidth = 4;
-    ctx.stroke();
-
-    // 5-Pointed Star in gold center
-    ctx.fillStyle = '#1A1406';
-    ctx.beginPath();
-    for (let i = 0; i < 5; i++) {
-      const angle = (i * 4 * Math.PI) / 5 - Math.PI / 2;
-      const x = cx + Math.cos(angle) * 32;
-      const y = cy + Math.sin(angle) * 32;
-      if (i === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
-    ctx.closePath();
-    ctx.fill();
-  } else if (skinId === 3) {
-    // 4. Bitmoji Stamp (Cleared Level 5 Mixed)
-    // Draw Bitmoji avatar headshot in a circular badge
-    ctx.fillStyle = '#FFFC00';
-    ctx.beginPath();
-    ctx.arc(cx, cy, 66, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.strokeStyle = '#FFFFFF';
-    ctx.lineWidth = 4;
-    ctx.stroke();
-
-    if (bitmojiImageElement && bitmojiImageElement.complete) {
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(cx, cy, 60, 0, Math.PI * 2);
-      ctx.clip();
-      ctx.drawImage(bitmojiImageElement, cx - 60, cy - 60, 120, 120);
-      ctx.restore();
-    } else {
-      // Silhouette placeholder
-      ctx.fillStyle = '#0B0C10';
-      ctx.beginPath();
-      ctx.arc(cx, cy - 8, 24, 0, Math.PI * 2);
-      ctx.arc(cx, cy + 45, 38, Math.PI, 0, false);
-      ctx.fill();
-    }
-  }
+  // Ghost body silhouette
+  ctx.fillStyle = '#FFFC00';
+  ctx.beginPath();
+  ctx.arc(cx, cy - 14, 26, Math.PI, 0, false);
+  ctx.lineTo(cx + 26, cy + 22);
+  // Wavy bottom
+  ctx.bezierCurveTo(cx + 18, cy + 30, cx + 8, cy + 22, cx, cy + 28);
+  ctx.bezierCurveTo(cx - 8, cy + 22, cx - 18, cy + 30, cx - 26, cy + 22);
+  ctx.closePath();
+  ctx.fill();
 
   // Soft top gloss over the tile back
   ctx.save();

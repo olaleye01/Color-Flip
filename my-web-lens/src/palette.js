@@ -32,7 +32,7 @@ export const SOLID_SWATCHES = [
   { id: 's12', name: 'Pure Titanium', type: 'solid', colorA: '#ECEFF1' },
 ];
 
-// Cosmetic Tile Back Emblems (Center emblem on face-down side)
+// Cosmetic Tile Back Emblem (Default Classic Snap)
 export const EMBLEM_SKINS = [
   {
     id: 0,
@@ -42,33 +42,6 @@ export const EMBLEM_SKINS = [
     unlockedByDefault: true,
     condition: 'Unlocked by default',
     checkUnlock: () => true,
-  },
-  {
-    id: 1,
-    name: 'Neon Prism',
-    key: 'neon',
-    description: 'Win 5 games total',
-    unlockedByDefault: false,
-    condition: '5 Total Wins',
-    checkUnlock: (save) => (save.totalGamesWon || 0) >= 5,
-  },
-  {
-    id: 2,
-    name: '24K Gold Foil',
-    key: 'gold',
-    description: 'Clear the board in ≤18 flips (Peak Memory)',
-    unlockedByDefault: false,
-    condition: '≤18 Flips Victory',
-    checkUnlock: (save) => Boolean(save.bestFlipCount && save.bestFlipCount <= 18),
-  },
-  {
-    id: 3,
-    name: 'Bitmoji Stamp',
-    key: 'bitmoji',
-    description: 'Win 10 games or clear in ≤16 flips',
-    unlockedByDefault: false,
-    condition: '10 Wins or ≤16 Flips',
-    checkUnlock: (save) => Boolean((save.totalGamesWon || 0) >= 10 || (save.bestFlipCount && save.bestFlipCount <= 16)),
   },
 ];
 

@@ -17,7 +17,7 @@ Because **Color Flip** runs inside the Snapchat mobile webview, the native Snapc
 The game utilizes a bright, tactile **Studio Matte** 3D environment paired with dark translucent glassmorphic cards for maximum legibility and high contrast:
 * **Surface Panel Fill:** `rgba(18, 20, 28, 0.78)` with `2px` border `rgba(255, 255, 255, 0.14)` and `16px` corner radius.
 * **Primary CTA ("PLAY" / "PLAY AGAIN"):** Snapchat Yellow `#FFFC00` background with `#0B0C10` bold black text and a `4px` bottom lip (`#D4D100`) that depresses on tap.
-* **Secondary CTA ("LEADERBOARD" / "SKINS" / "BACK TO LOBBY"):** Frosted Pill `rgba(255, 255, 255, 0.15)` with crisp `#FFFFFF` text.
+* **Secondary CTA ("LEADERBOARD" / "BACK TO LOBBY"):** Frosted Pill `rgba(255, 255, 255, 0.15)` with crisp `#FFFFFF` text.
 * **Accent Status Colors:**
   * **Timer Normal (`60.0s – 10.1s`):** Pure White `#FFFFFF`
   * **Timer Warning (`10.0s – 0.0s`):** Pulsing Crimson `#FF1E42`
@@ -55,15 +55,15 @@ The 3D 4x4 board sits angled at `15°` in the center of the viewport, gently rot
 |  |          P L A Y  ▶             |  | <-- Primary Snap Yellow CTA (#FFFC00)
 |  +---------------------------------+  |
 |                                       |
-|  +----------------+ +--------------+  |
-|  |   LEADERBOARD  | |  TILE SKIN   |  | <-- Secondary Action Pills
-|  +----------------+ +--------------+  |
+|        +---------------------+        |
+|        |     LEADERBOARD     |        | <-- Centralized Secondary Action Pill
+|        +---------------------+        |
 |                                       |
 +---------------------------------------+
 ```
 
 * **Immediate Action:** Tapping **"PLAY ▶"** immediately triggers the 2.5s color shuffle sequence.
-* **Conditional Leaderboard Button:** If `snapchat.isSupported('leaderboards') === false`, the `LEADERBOARD` button automatically hides and `TILE SKIN` centers itself.
+* **Conditional Leaderboard Button:** If `snapchat.isSupported('leaderboards') === false`, the `LEADERBOARD` button automatically hides.
 
 ---
 
@@ -132,28 +132,7 @@ Designed for zero visual clutter so the player's peripheral vision stays locked 
 
 ---
 
-### Screen 4: Tile Skin Drawer (Modal Bottom Sheet)
-Opened from the Lobby (`TILE SKIN`). Slides up over the bottom `45%` of the screen while keeping the 3D board visible above so tapping an emblem previews it live on the tiles:
-
-```text
-+---------------------------------------+
-|       (3D Board Live Preview Above)   |
-+---------------------------------------+
-|           SELECT TILE EMBLEM      [X] |
-|                                       |
-|  +--------+ +--------+ +--------+ +--------+
-|  | [Snap] | | [Prism]| | [Gold] | |[Bitmoji|
-|  |Classic | | 5 Wins | |≤18 Flip| |10W/≤16F|
-|  |EQUIPPED| | EQUIP  | | LOCKED | | LOCKED |
-|  +--------+ +--------+ +--------+ +--------+
-|                                       |
-|  Selected: Classic Snap Emblem        |
-+---------------------------------------+
-```
-
----
-
-### Screen 5: Post-Game 3D Celebration Flex Card
+### Screen 4: Post-Game 3D Celebration Flex Card
 When the 8th pair is matched (or time expires), a rich celebration card animates into the center:
 
 ```text

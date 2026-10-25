@@ -1,6 +1,6 @@
 // src/game.js
 // Core Game Logic, State Machine, Timer, Scoring & Progression (Solid Color Memory)
-import { generateBoardPairs, LEVELS, EMBLEM_SKINS, SOLID_SWATCHES } from './palette.js';
+import { generateBoardPairs, LEVELS, SOLID_SWATCHES } from './palette.js';
 import { sound } from './audio.js';
 import { persistSaveState, getSaveState, submitRoundScore } from './snapchat.js';
 
@@ -288,17 +288,7 @@ export class GameEngine {
     const newBestFlips = Math.min(prevSave.bestFlipCount || 999, this.flipsCount);
     const newBestTimeLeft = Math.max(prevSave.fastestClearTimeLeft || 0, this.timeLeft);
 
-    // Check cosmetic skin unlocks
     const newUnlocks = [];
-    if (newGamesWon >= 5 && (prevSave.totalGamesWon || 0) < 5) {
-      newUnlocks.push('Tile Back Skin: Neon Prism (5 Wins)');
-    }
-    if (this.flipsCount <= 18 && (prevSave.bestFlipCount || 999) > 18) {
-      newUnlocks.push('Tile Back Skin: 24K Gold Foil (≤18 Flips)');
-    }
-    if ((newGamesWon >= 10 || this.flipsCount <= 16) && (prevSave.totalGamesWon || 0) < 10 && (prevSave.bestFlipCount || 999) > 16) {
-      newUnlocks.push('Tile Back Skin: Bitmoji Stamp');
-    }
 
     const updatedSave = {
       highScore: newHighScore,
