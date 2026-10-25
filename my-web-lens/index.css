@@ -1299,7 +1299,7 @@ button:focus-visible {
   justify-content: center;
   gap: 10px;
   width: 100%;
-  margin-bottom: -16px;
+  margin-bottom: 28px;
 }
 
 .header-star {
@@ -1732,7 +1732,7 @@ button:focus-visible {
   .logo-flip { font-size: 60px; }
   .btn-play-hero { height: 62px; font-size: 24px; }
   .lobby-actions-bottom { gap: 12px; }
-  .flex-banner-header { margin-bottom: -18px; }
+  .flex-banner-header { margin-bottom: 14px; }
   .medallion-rim-outer { width: 84px; height: 84px; }
   .flex-avatar-medallion { margin-bottom: -36px; }
   .flex-glass-card { padding: 42px 14px 12px; }

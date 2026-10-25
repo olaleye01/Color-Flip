@@ -2,7 +2,7 @@
 // PlayCanvas 3D Board & Tile Architecture for Color Flip
 import * as pc from 'playcanvas';
 import { getSwatchTexture, getEmblemTexture, shadeHex } from './textures.js';
-import { LEVELS, SOLID_SWATCHES } from './palette.js';
+import { LEVELS, SOLID_SWATCHES, generateBoardPairs } from './palette.js';
 
 export class Board3D {
   constructor(canvasElement) {
@@ -361,10 +361,11 @@ export class Board3D {
       this.rimMat.update();
     }
 
-    // 4. Lobby showcase: tinted tile sides + sample swatch preview
+    // 4. Lobby showcase: 8 matching pairs randomly shuffled across the 16 tiles
     this.setLobbyTint(true);
+    const welcomePairs = generateBoardPairs();
     for (let i = 0; i < 16; i++) {
-      this.setTileSwatch(i, SOLID_SWATCHES[i % SOLID_SWATCHES.length]);
+      this.setTileSwatch(i, welcomePairs[i]);
     }
 
     // 5. Refresh tile back emblem
