@@ -49,5 +49,23 @@ window.addEventListener('DOMContentLoaded', async () => {
   game.init(saveState || getSaveState());
   ui.refreshUserData();
 
+  // Developer preview mode: ?preview=victory
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('preview') === 'victory') {
+    ui.showFlexCard({
+      status: 'VICTORY',
+      levelName: 'Solid',
+      finalScore: 4832,
+      isNewHighScore: true,
+      timeBonus: 2332,
+      timeLeft: 23.3,
+      flipBonus: 0,
+      flipsCount: 42,
+      streakBonus: 2500,
+      multiplier: 1.0,
+      newUnlocks: [],
+    });
+  }
+
   console.log('Color Flip Web Lens ready!');
 });

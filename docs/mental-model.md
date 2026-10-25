@@ -56,7 +56,7 @@ The `bitmoji` capability describes **only the current player** (either as a head
 * **Native Panel Presentation:**
   * Call `const { bestScore } = await snapchat.leaderboards.submitScore({ leaderboardId: 'main', score: Math.round(finalScore) })`.
   * `bestScore` is optional in the response; if present, update the HUD's Personal Best label.
-  * Tapping **"🏆 VIEW FRIEND LEADERBOARD"** on the victory screen invokes `await snapchat.leaderboards.show()` to open Snapchat's native leaderboard panel where players see how they rank against friends.
+  * Tapping **"VIEW FRIEND LEADERBOARD"** on the victory screen invokes `await snapchat.leaderboards.show()` to open Snapchat's native leaderboard panel where players see how they rank against friends.
 
 ### D. Persistent Storage API (`snapchat.storage`)
 * **Platform & Quota Rules:**
@@ -115,7 +115,7 @@ Players customize the **center emblem on the face-down side of the tiles** by ac
 * **Board Frame:** Clean minimalist white studio tray with soft rounded corners, recessed slots, and subtle ambient drop shadow.
 * **Tile Finish:** Tactile matte-plastic toy tiles with beveled tactile edges and specular gloss accents.
 * **Lighting:** Bright neutral studio softbox lighting with soft directional fill.
-* **Match VFX:** Crisp color-matched celebratory confetti and floating combo indicators (`+250!`, `🔥 2x STREAK`).
+* **Match VFX:** Crisp color-matched celebratory confetti and floating combo indicators (`+250!`, `2x STREAK`).
 
 ### Sound Bank (Procedural Web Audio API)
 * **Shuffle Phase (2.5s):** Rapid rhythmic card-flutter ticks that decelerate and rise in pitch.
@@ -135,20 +135,20 @@ Players customize the **center emblem on the face-down side of the tiles** by ac
    * Bold extruded title logo ("COLOR FLIP").
    * **Unobstructed View:** The 3D 4x4 board sits angled in the center, gently rotating in preview mode without any overlapping category cards, arrows, or level selectors.
    * Prominent Snapchat Yellow **"PLAY ▶"** CTA button.
-   * Secondary action pills: **"🏆 LEADERBOARD"** and **"🎨 TILE SKIN"**.
+   * Secondary action pills: **"LEADERBOARD"** and **"TILE SKIN"**.
 2. **Post-"Play" Shuffle & Peek Sequence (~4.0 Seconds Total):**
-   * **0.0s – 2.5s (Shuffle):** Clicking **"Play"** hides the lobby UI. Status banner shows **"🎲 SHUFFLING COLORS..."** while colors scramble rapidly across all 16 face-up tiles.
-   * **2.5s – 4.0s (Memorization Lock-In):** Layout snaps into position. Banner displays **"👀 MEMORIZE! 1.5s"** with a rapid progress depletion bar.
+   * **0.0s – 2.5s (Shuffle):** Clicking **"Play"** hides the lobby UI. Status banner shows **"SHUFFLING COLORS..."** while colors scramble rapidly across all 16 face-up tiles.
+   * **2.5s – 4.0s (Memorization Lock-In):** Layout snaps into position. Banner displays **"MEMORIZE! 1.5s"** with a rapid progress depletion bar.
    * **4.0s – 4.4s (Flip-Down & Start):** Tiles flip face-down, banner flashes **"GO!"**, touch input unlocks, and countdown begins.
 3. **In-Game HUD:**
    * **Top Bar:** Player Bitmoji avatar (left), bold `60.0` countdown timer (center), `FLIPS: 0` counter (right).
    * **Mode Badge:** Subtle **"SOLID MODE"** pill below the timer.
    * **Center Zone:** 3D 4x4 interactive board in the natural thumb zone.
-   * **Bottom Bar:** Dynamic streak bar (`🔥 2x STREAK (+500 PTS)`) and quick `↻ RESTART` pill.
-4. **Post-Game Victory "Flex Card":**
-   * Animated trading-card modal showing **"★ BOARD CLEARED! ★"**, final score, and full receipt breakdown (Time Left, Flips, Streak Bonus).
+   * **Bottom Bar:** Dynamic streak bar (`2x STREAK (+500 PTS)`) and quick `RESTART` pill.
+4. **Post-Game 3D Celebration Flex Card:**
+   * Animated trading-card modal showing **"BOARD CLEARED!"**, avatar medallion, retro synthwave perspective grid, and breakdown (Time Left, Flips Efficiency, Streak Bonus).
    * Displays unlocked skin milestone toasts if earned.
-   * CTAs: **"PLAY AGAIN"**, **"🏆 VIEW FRIEND LEADERBOARD"**, and **"BACK TO LOBBY"**.
+   * CTAs: **"PLAY AGAIN ▶"**, **"< VIEW FRIEND LEADERBOARD >"**, and **"BACK TO LOBBY"**.
 
 ---
 

@@ -49,15 +49,20 @@ export class UIController {
     this.flexModal = document.getElementById('flex-modal');
     this.flexModalOverlay = document.getElementById('flex-modal-overlay');
     this.flexTitle = document.getElementById('flex-title');
+    this.flexTitleWord1 = document.getElementById('flex-title-word-1');
+    this.flexTitleWord2 = document.getElementById('flex-title-word-2');
     this.flexAvatar = document.getElementById('flex-avatar');
     this.flexScore = document.getElementById('flex-score');
     this.flexPbBadge = document.getElementById('flex-pb-badge');
     this.flexTimeBonus = document.getElementById('flex-time-bonus');
+    this.flexTimeDetail = document.getElementById('flex-time-detail');
     this.flexFlipBonus = document.getElementById('flex-flip-bonus');
+    this.flexFlipDetail = document.getElementById('flex-flip-detail');
     this.flexStreakBonus = document.getElementById('flex-streak-bonus');
     this.flexMult = document.getElementById('flex-mult');
     this.flexUnlocks = document.getElementById('flex-unlocks');
     this.btnFlexPlayAgain = document.getElementById('btn-flex-play-again');
+    this.btnFlexPlayText = document.getElementById('btn-flex-play-text');
     this.btnFlexLeaderboard = document.getElementById('btn-flex-leaderboard');
     this.btnFlexChangeLevel = document.getElementById('btn-flex-change-level');
 
@@ -161,7 +166,7 @@ export class UIController {
     this.game.onStreakUpdate = (streak, bonusTotal) => {
       if (streak >= 2) {
         this.streakBar.classList.remove('hidden');
-        this.streakText.textContent = `🔥 ${streak}x STREAK (+${bonusTotal} PTS)`;
+        this.streakText.innerHTML = `<svg class="icon-streak-flame" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 23c4.97 0 9-4.03 9-9 0-3.6-2.1-6.72-5.15-8.15C15.4 7.2 14.3 8.8 13.5 10c-.8-1.5-1.5-3.6-1.5-6 0-.6-.2-1.2-.5-1.7C8.2 4.4 5 8.7 5 14c0 4.97 4.03 9 9 9zm-1-8.5c0-1.4.8-2.6 1.8-3.3 1.2 1.3 2.2 2.7 2.2 4.3 0 1.66-1.34 3-3 3s-3-1.34-3-3c0-.3.1-.7.2-1 .3-.3.8-.5 1.8-.5v.5z"/></svg> <span>${streak}x STREAK (+${bonusTotal} PTS)</span>`;
         this.hudAvatarContainer.classList.add('avatar-glow-cyan');
       } else {
         this.streakBar.classList.add('hidden');
@@ -282,10 +287,10 @@ export class UIController {
         <div class="skin-footer">
           ${
             isEquipped
-              ? `<span class="badge-equipped">EQUIPPED ✓</span>`
+              ? `<span class="badge-equipped"><svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="3" style="display:inline-block;vertical-align:middle;margin-right:4px;"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>EQUIPPED</span>`
               : isUnlocked
               ? `<button class="btn-equip">EQUIP</button>`
-              : `<span class="badge-locked">🔒 ${skin.condition}</span>`
+              : `<span class="badge-locked"><svg viewBox="0 0 24 24" width="12" height="12" fill="currentColor" style="display:inline-block;vertical-align:middle;margin-right:4px;"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>${skin.condition}</span>`
           }
         </div>
       `;
@@ -307,16 +312,25 @@ export class UIController {
     this.flexModalOverlay.classList.remove('hidden');
 
     if (payload.status === 'VICTORY') {
-      this.flexTitle.textContent = `★ BOARD CLEARED! ★`;
+      if (this.flexTitleWord1) this.flexTitleWord1.textContent = 'BOARD';
+      if (this.flexTitleWord2) this.flexTitleWord2.textContent = 'CLEARED!';
       this.flexTitle.classList.remove('title-loss');
       this.flexTitle.classList.add('title-win');
       this.flexPbBadge.classList.toggle('hidden', !payload.isNewHighScore);
 
-      this.flexTimeBonus.textContent = `+${payload.timeBonus.toLocaleString()} pts (${payload.timeLeft.toFixed(1)}s)`;
-      this.flexFlipBonus.textContent = `+${payload.flipBonus.toLocaleString()} pts (${payload.flipsCount} flips)`;
+      this.flexTimeBonus.textContent = `+${payload.timeBonus.toLocaleString()} pts`;
+      if (this.flexTimeDetail) {
+        this.flexTimeDetail.textContent = `(${payload.timeLeft.toFixed(1)}s)`;
+      }
+
+      this.flexFlipBonus.textContent = `+${payload.flipBonus.toLocaleString()} pts`;
+      if (this.flexFlipDetail) {
+        this.flexFlipDetail.textContent = `(${payload.flipsCount} flips)`;
+      }
+
       this.flexStreakBonus.textContent = `+${payload.streakBonus.toLocaleString()} pts`;
-      if (this.flexMult) {
-        this.flexMult.textContent = `×1.00`;
+      if (this.btnFlexPlayText) {
+        this.btnFlexPlayText.textContent = 'PLAY AGAIN';
       }
 
       // Score count-up animation
@@ -331,26 +345,36 @@ export class UIController {
         }
       }, 20);
 
-      // Unlocks toast
+      // Unlocks toast (clean vector SVG, zero emojis)
       if (payload.newUnlocks && payload.newUnlocks.length > 0) {
         this.flexUnlocks.classList.remove('hidden');
         this.flexUnlocks.innerHTML = payload.newUnlocks
-          .map((u) => `<div class="unlock-item">🎉 ${u}</div>`)
+          .map(
+            (u) =>
+              `<div class="unlock-item"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> <span>${u}</span></div>`
+          )
           .join('');
       } else {
         this.flexUnlocks.classList.add('hidden');
       }
     } else {
-      this.flexTitle.textContent = `⏰ TIME'S UP!`;
+      if (this.flexTitleWord1) this.flexTitleWord1.textContent = "TIME'S";
+      if (this.flexTitleWord2) this.flexTitleWord2.textContent = "UP!";
       this.flexTitle.classList.remove('title-win');
       this.flexTitle.classList.add('title-loss');
       this.flexPbBadge.classList.add('hidden');
       this.flexScore.textContent = '0';
-      this.flexTimeBonus.textContent = '0 pts';
-      this.flexFlipBonus.textContent = '0 pts';
-      this.flexStreakBonus.textContent = '0 pts';
-      if (this.flexMult) {
-        this.flexMult.textContent = '×0.00';
+      this.flexTimeBonus.textContent = '+0 pts';
+      if (this.flexTimeDetail) {
+        this.flexTimeDetail.textContent = '(0.0s)';
+      }
+      this.flexFlipBonus.textContent = '+0 pts';
+      if (this.flexFlipDetail) {
+        this.flexFlipDetail.textContent = `(${payload.flipsCount} flips)`;
+      }
+      this.flexStreakBonus.textContent = '+0 pts';
+      if (this.btnFlexPlayText) {
+        this.btnFlexPlayText.textContent = 'TRY AGAIN';
       }
       this.flexUnlocks.classList.add('hidden');
     }

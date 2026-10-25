@@ -62,8 +62,12 @@
                 />
               </div>
               <div class="best-text-group">
-                <span class="best-label">HIGH SCORE</span>
+                <span class="best-label" id="lobby-score-label">HIGH SCORE</span>
                 <span id="lobby-high-score" class="best-score">0</span>
+                <div id="lobby-last-row" class="last-score-row hidden">
+                  <span class="last-score-label">LAST:</span>
+                  <span id="lobby-last-score" class="last-score-num">0</span>
+                </div>
               </div>
             </div>
 
@@ -156,7 +160,7 @@
         <!-- SCREEN 2: PHASE BANNER TOAST (0.0s – 4.0s) -->
         <aside id="phase-banner" class="phase-banner-toast hidden" aria-live="assertive">
           <div class="phase-content">
-            <span id="phase-text" class="phase-title">🎲 SHUFFLING COLORS...</span>
+            <span id="phase-text" class="phase-title">SHUFFLING COLORS...</span>
             <div class="phase-bar-track">
               <div id="phase-bar-fill" class="phase-bar-fill"></div>
             </div>
@@ -205,7 +209,7 @@
           <!-- Bottom Streak Meter & Quick Restart Zone -->
           <div class="hud-bottom-actions">
             <div id="streak-bar" class="dynamic-streak-bar hidden">
-              <span id="streak-text" class="streak-text">🔥 2x STREAK (+500 PTS)</span>
+              <span id="streak-text" class="streak-text">2x STREAK (+500 PTS)</span>
             </div>
 
             <button id="btn-restart" class="btn-restart-pill" aria-label="Restart Board Instantly">
@@ -231,64 +235,246 @@
           <div id="skin-list" class="skin-list-grid"></div>
         </div>
 
-        <!-- SCREEN 5: POST-GAME FLEX CARD MODAL -->
-        <div id="flex-modal-overlay" class="modal-backdrop hidden"></div>
+        <!-- SCREEN 5: POST-GAME CELEBRATION / FLEX CARD MODAL -->
+        <div id="flex-modal-overlay" class="modal-backdrop hidden" aria-hidden="true">
+          <div class="flex-modal-spotlight-beam" aria-hidden="true"></div>
+        </div>
+
         <div id="flex-modal" class="flex-card-modal hidden" role="dialog" aria-modal="true" aria-label="Round Summary">
-          <div class="glass-card flex-receipt-card">
-            <div class="flex-receipt-header">
-              <h2 id="flex-title" class="flex-title title-win">★ BOARD CLEARED! ★</h2>
-              <div class="flex-avatar-frame">
-                <img id="flex-avatar" src="./assets/avatar_default.png" alt="Victory Bitmoji" onerror="this.src='./assets/avatar_default.png'" />
+          
+          <!-- Decorative Floating Confetti Layer -->
+          <div class="flex-confetti-stage" aria-hidden="true">
+            <span class="confetti cf-pink cf-1"></span>
+            <span class="confetti cf-cyan cf-2"></span>
+            <span class="confetti cf-yellow cf-3"></span>
+            <span class="confetti cf-purple cf-4"></span>
+            <span class="confetti cf-gold cf-5"></span>
+            <span class="confetti cf-pink cf-6"></span>
+            <span class="confetti cf-cyan cf-7"></span>
+            <span class="confetti cf-yellow cf-8"></span>
+            <span class="confetti-spark sp-1"></span>
+            <span class="confetti-spark sp-2"></span>
+            <span class="confetti-spark sp-3"></span>
+            <span class="confetti-spark sp-4"></span>
+          </div>
+
+          <!-- Top 3D Celebration Banner -->
+          <div class="flex-banner-header">
+            <!-- 3D Puffy Left Star -->
+            <svg class="header-star star-left" viewBox="0 0 36 36" width="34" height="34" aria-hidden="true">
+              <defs>
+                <linearGradient id="star-grad-left" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#fff899" />
+                  <stop offset="45%" stop-color="#ffca18" />
+                  <stop offset="100%" stop-color="#ff8c00" />
+                </linearGradient>
+                <filter id="star-glow-left" x="-20%" y="-20%" width="140%" height="140%">
+                  <feDropShadow dx="0" dy="3" stdDeviation="2" flood-color="#7a4200" flood-opacity="0.8" />
+                </filter>
+              </defs>
+              <path d="M18 2 L22.4 12.2 L33.4 13.2 L25.1 20.6 L27.5 31.4 L18 25.8 L8.5 31.4 L10.9 20.6 L2.6 13.2 L13.6 12.2 Z"
+                    fill="url(#star-grad-left)" stroke="#ffffff" stroke-width="1.2" stroke-linejoin="round" filter="url(#star-glow-left)" />
+            </svg>
+
+            <!-- 3D Stacked Bubbly Cartoon Title -->
+            <h2 id="flex-title" class="flex-3d-title title-win" aria-label="Board Cleared!">
+              <span id="flex-title-word-1" class="flex-title-word word-board">BOARD</span>
+              <span id="flex-title-word-2" class="flex-title-word word-cleared">CLEARED!</span>
+            </h2>
+
+            <!-- 3D Puffy Right Star -->
+            <svg class="header-star star-right" viewBox="0 0 36 36" width="34" height="34" aria-hidden="true">
+              <defs>
+                <linearGradient id="star-grad-right" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#fff899" />
+                  <stop offset="45%" stop-color="#ffca18" />
+                  <stop offset="100%" stop-color="#ff8c00" />
+                </linearGradient>
+                <filter id="star-glow-right" x="-20%" y="-20%" width="140%" height="140%">
+                  <feDropShadow dx="0" dy="3" stdDeviation="2" flood-color="#7a4200" flood-opacity="0.8" />
+                </filter>
+              </defs>
+              <path d="M18 2 L22.4 12.2 L33.4 13.2 L25.1 20.6 L27.5 31.4 L18 25.8 L8.5 31.4 L10.9 20.6 L2.6 13.2 L13.6 12.2 Z"
+                    fill="url(#star-grad-right)" stroke="#ffffff" stroke-width="1.2" stroke-linejoin="round" filter="url(#star-glow-right)" />
+            </svg>
+          </div>
+
+          <!-- Avatar Medallion (Perched Over Card Top Edge) -->
+          <div class="flex-avatar-medallion">
+            <div class="medallion-rim-outer">
+              <div class="medallion-rim-neon">
+                <div class="medallion-disc">
+                  <!-- Sparkle confetti inside circle around avatar -->
+                  <span class="disc-sparkle ds-1" aria-hidden="true"></span>
+                  <span class="disc-sparkle ds-2" aria-hidden="true"></span>
+                  <span class="disc-sparkle ds-3" aria-hidden="true"></span>
+                  <span class="disc-sparkle ds-4" aria-hidden="true"></span>
+                  <img
+                    id="flex-avatar"
+                    src="./assets/avatar_default.png"
+                    alt="Player Avatar"
+                    onerror="this.src='./assets/avatar_default.png'"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Frosted Glass Stats Card -->
+          <div class="flex-glass-card">
+            <!-- Score Block -->
+            <div class="flex-score-section">
+              <span class="flex-score-label">FINAL SCORE</span>
+              <div class="flex-score-row">
+                <span id="flex-score" class="flex-score-val">0</span>
+              </div>
+              <div id="flex-pb-badge" class="flex-pb-pill hidden">
+                <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                <span>NEW PERSONAL BEST!</span>
               </div>
             </div>
 
-            <div class="flex-score-block">
-              <span class="flex-score-label">FINAL SCORE</span>
-              <div id="flex-score" class="flex-score-number">0</div>
-              <div id="flex-pb-badge" class="pb-badge hidden">🏆 NEW PERSONAL BEST!</div>
+            <!-- Retro Synthwave Perspective Grid Graphic -->
+            <div class="flex-grid-wrapper" aria-hidden="true">
+              <svg class="flex-retro-grid" viewBox="0 0 320 64" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="grid-line-glow" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#00e5ff" stop-opacity="0.15" />
+                    <stop offset="40%" stop-color="#00e5ff" stop-opacity="0.75" />
+                    <stop offset="100%" stop-color="#00e5ff" stop-opacity="0.3" />
+                  </linearGradient>
+                  <linearGradient id="grid-edge-mask" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#000000" stop-opacity="0" />
+                    <stop offset="15%" stop-color="#ffffff" stop-opacity="1" />
+                    <stop offset="85%" stop-color="#ffffff" stop-opacity="1" />
+                    <stop offset="100%" stop-color="#000000" stop-opacity="0" />
+                  </linearGradient>
+                  <mask id="grid-fade-mask">
+                    <rect x="0" y="0" width="320" height="64" fill="url(#grid-edge-mask)" />
+                  </mask>
+                </defs>
+                <g mask="url(#grid-fade-mask)" stroke="url(#grid-line-glow)" stroke-width="1.3">
+                  <!-- Horizontal perspective lines -->
+                  <line x1="0" y1="8" x2="320" y2="8" stroke-opacity="0.3" />
+                  <line x1="0" y1="16" x2="320" y2="16" stroke-opacity="0.45" />
+                  <line x1="0" y1="26" x2="320" y2="26" stroke-opacity="0.65" />
+                  <line x1="0" y1="40" x2="320" y2="40" stroke-opacity="0.85" />
+                  <line x1="0" y1="60" x2="320" y2="60" stroke-opacity="1.0" />
+                  <!-- Perspective lines radiating from center horizon down to bottom -->
+                  <line x1="160" y1="4" x2="160" y2="64" />
+                  <line x1="160" y1="4" x2="120" y2="64" />
+                  <line x1="160" y1="4" x2="200" y2="64" />
+                  <line x1="160" y1="4" x2="80" y2="64" />
+                  <line x1="160" y1="4" x2="240" y2="64" />
+                  <line x1="160" y1="4" x2="40" y2="64" />
+                  <line x1="160" y1="4" x2="280" y2="64" />
+                  <line x1="160" y1="4" x2="0" y2="64" />
+                  <line x1="160" y1="4" x2="320" y2="64" />
+                </g>
+              </svg>
             </div>
 
-            <div class="receipt-divider"></div>
+            <!-- Stats Breakdown Rows (Clean vector SVG icons, NO EMOJIS) -->
+            <div class="flex-breakdown-list">
+              <!-- Row 1: Time Left -->
+              <div class="breakdown-row">
+                <div class="breakdown-label-col">
+                  <div class="breakdown-icon-box icon-box-time">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2">
+                      <circle cx="12" cy="13" r="8"/>
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v4l2.5 2.5"/>
+                      <path stroke-linecap="round" d="M10 2h4"/>
+                      <path stroke-linecap="round" d="M12 2v2.5"/>
+                    </svg>
+                  </div>
+                  <span class="breakdown-label">Time Left</span>
+                </div>
+                <div class="breakdown-value-col">
+                  <span id="flex-time-bonus" class="pts-val">+0 pts</span>
+                  <span id="flex-time-detail" class="detail-val">(0.0s)</span>
+                </div>
+              </div>
 
-            <table class="receipt-table">
-              <tbody>
-                <tr>
-                  <td>⏱ Time Left</td>
-                  <td id="flex-time-bonus" class="table-val">+0 pts</td>
-                </tr>
-                <tr>
-                  <td>🎯 Flips Efficiency</td>
-                  <td id="flex-flip-bonus" class="table-val">+0 pts</td>
-                </tr>
-                <tr>
-                  <td>🔥 Streak Bonus</td>
-                  <td id="flex-streak-bonus" class="table-val">+0 pts</td>
-                </tr>
-              </tbody>
-            </table>
+              <!-- Row 2: Flips Efficiency -->
+              <div class="breakdown-row">
+                <div class="breakdown-label-col">
+                  <div class="breakdown-icon-box icon-box-flips">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2">
+                      <circle cx="12" cy="12" r="9"/>
+                      <circle cx="12" cy="12" r="5"/>
+                      <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
+                    </svg>
+                  </div>
+                  <span class="breakdown-label">Flips Efficiency</span>
+                </div>
+                <div class="breakdown-value-col">
+                  <span id="flex-flip-bonus" class="pts-val">+0 pts</span>
+                  <span id="flex-flip-detail" class="detail-val">(0 flips)</span>
+                </div>
+              </div>
 
-            <div id="flex-unlocks" class="unlock-toasts-box hidden"></div>
+              <!-- Row 3: Streak Bonus -->
+              <div class="breakdown-row">
+                <div class="breakdown-label-col">
+                  <div class="breakdown-icon-box icon-box-streak">
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                      <path d="M12 23c4.97 0 9-4.03 9-9 0-3.6-2.1-6.72-5.15-8.15C15.4 7.2 14.3 8.8 13.5 10c-.8-1.5-1.5-3.6-1.5-6 0-.6-.2-1.2-.5-1.7C8.2 4.4 5 8.7 5 14c0 4.97 4.03 9 9 9zm-1-8.5c0-1.4.8-2.6 1.8-3.3 1.2 1.3 2.2 2.7 2.2 4.3 0 1.66-1.34 3-3 3s-3-1.34-3-3c0-.3.1-.7.2-1 .3-.3.8-.5 1.8-.5v.5z"/>
+                    </svg>
+                  </div>
+                  <span class="breakdown-label">Streak Bonus</span>
+                </div>
+                <div class="breakdown-value-col">
+                  <span id="flex-streak-bonus" class="pts-val pts-highlight-gold">+0 pts</span>
+                </div>
+              </div>
+            </div>
 
-            <div class="flex-actions-col">
-              <button id="btn-flex-play-again" class="btn-primary-cta">
-                <span>PLAY AGAIN</span>
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <!-- Cosmetic Skin Unlocks (Clean SVG vector badges, NO EMOJIS) -->
+            <div id="flex-unlocks" class="flex-unlocks-box hidden"></div>
+          </div>
+
+          <!-- Bottom Action Buttons Zone -->
+          <div class="flex-actions-container">
+            <!-- Primary Action: Glossy 3D Yellow Capsule CTA -->
+            <div class="flex-primary-cta-group">
+              <span class="burst-tick-ray tick-left-1"></span>
+              <span class="burst-tick-ray tick-left-2"></span>
+              <span class="burst-tick-ray tick-left-3"></span>
+              <button id="btn-flex-play-again" class="btn-flex-play-cta" aria-label="Play Again">
+                <span id="btn-flex-play-text">PLAY AGAIN</span>
+                <svg class="icon-play-triangle" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
                   <path d="M8 5v14l11-7z" />
                 </svg>
               </button>
+              <span class="burst-tick-ray tick-right-1"></span>
+              <span class="burst-tick-ray tick-right-2"></span>
+              <span class="burst-tick-ray tick-right-3"></span>
+            </div>
 
-              <button id="btn-flex-leaderboard" class="btn-secondary-pill">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            <!-- Secondary Action: Glossy Deep Royal Blue Capsule with Chevrons & Trophy -->
+            <button id="btn-flex-leaderboard" class="btn-flex-leaderboard-cta" aria-label="View Friend Leaderboard">
+              <svg class="chev-nav chev-left" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+              <div class="leaderboard-btn-label">
+                <svg class="icon-trophy-svg" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+                  <path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0011 15.9V19H8v2h8v-2h-3v-3.1c1.8-.46 3.16-1.95 3.61-3.96C19.08 11.63 21 9.55 21 7V5c0-1.1-.9-2-2-2zM5 8V5h2v4.82C5.84 9.4 5 8.78 5 8zm14 0c0 .78-.84 1.4-2 1.82V5h2v3z"/>
                 </svg>
                 <span>VIEW FRIEND LEADERBOARD</span>
-              </button>
+              </div>
+              <svg class="chev-nav chev-right" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="3.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
 
-              <button id="btn-flex-change-level" class="btn-subtle-link">
-                BACK TO LOBBY
-              </button>
-            </div>
+            <!-- Tertiary Action: Clean Sky Blue Link -->
+            <button id="btn-flex-change-level" class="btn-flex-lobby-link" aria-label="Return to Lobby">
+              BACK TO LOBBY
+            </button>
           </div>
+
         </div>
       </div>
     </div>

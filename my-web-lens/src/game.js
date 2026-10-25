@@ -103,7 +103,7 @@ export class GameEngine {
     // PHASE 1: 2.5s Live Color Shuffle
     this.setState(GAME_STATES.SHUFFLE);
     if (this.onPhaseBanner) {
-      this.onPhaseBanner('🎲 SHUFFLING COLORS...', 'shuffle', 2500);
+      this.onPhaseBanner('SHUFFLING COLORS...', 'shuffle', 2500);
     }
 
     // Orient all 16 tiles face-up
@@ -135,7 +135,7 @@ export class GameEngine {
       sound.playLockInPeek();
 
       if (this.onPhaseBanner) {
-        this.onPhaseBanner('👀 MEMORIZE! 1.5s', 'peek', 1500);
+        this.onPhaseBanner('MEMORIZE! 1.5s', 'peek', 1500);
       }
 
       // PHASE 3: Cascade Flip-Down (0.4s) after 1.5s peek
@@ -144,7 +144,7 @@ export class GameEngine {
         sound.playCascadeFlipDown();
 
         if (this.onPhaseBanner) {
-          this.onPhaseBanner('⚡ GO!', 'go', 400);
+          this.onPhaseBanner('GO!', 'go', 400);
         }
 
         this.board.cascadeFlipDown(() => {

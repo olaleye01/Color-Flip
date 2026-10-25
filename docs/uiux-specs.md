@@ -56,14 +56,14 @@ The 3D 4x4 board sits angled at `15°` in the center of the viewport, gently rot
 |  +---------------------------------+  |
 |                                       |
 |  +----------------+ +--------------+  |
-|  | 🏆 LEADERBOARD | | 🎨 TILE SKIN |  | <-- Secondary Action Pills
+|  |   LEADERBOARD  | |  TILE SKIN   |  | <-- Secondary Action Pills
 |  +----------------+ +--------------+  |
 |                                       |
 +---------------------------------------+
 ```
 
 * **Immediate Action:** Tapping **"PLAY ▶"** immediately triggers the 2.5s color shuffle sequence.
-* **Conditional Leaderboard Button:** If `snapchat.isSupported('leaderboards') === false`, the `🏆 LEADERBOARD` button automatically hides and `🎨 TILE SKIN` centers itself.
+* **Conditional Leaderboard Button:** If `snapchat.isSupported('leaderboards') === false`, the `LEADERBOARD` button automatically hides and `TILE SKIN` centers itself.
 
 ---
 
@@ -74,7 +74,7 @@ Triggered the instant the user clicks **"PLAY"**. Lobby UI slides out, the camer
 +---------------------------------------+
 |                                       |
 |  +---------------------------------+  |
-|  |  [Bitmoji: 👀]   MEMORIZE! 1.5s |  | <-- Dynamic Phase Banner
+|  |  [Bitmoji]        MEMORIZE! 1.5s|  | <-- Dynamic Phase Banner
 |  |  [==================---------]  |  | <-- High-Speed Depletion Bar
 |  +---------------------------------+  |
 |                                       |
@@ -88,8 +88,8 @@ Triggered the instant the user clicks **"PLAY"**. Lobby UI slides out, the camer
 +---------------------------------------+
 ```
 
-* **Phase 1 (`0.0s – 2.5s`):** Banner displays `🎲 SHUFFLING COLORS...` in Cyan `#00E5FF` while the 16 face-up tiles rapidly cycle solid colors.
-* **Phase 2 (`2.5s – 4.0s`):** Board snaps into its final layout with a subtle camera pulse. Banner switches to `👀 MEMORIZE! 1.5s` in Snap Yellow `#FFFC00` with a rapid depletion bar.
+* **Phase 1 (`0.0s – 2.5s`):** Banner displays `SHUFFLING COLORS...` in Cyan `#00E5FF` while the 16 face-up tiles rapidly cycle solid colors.
+* **Phase 2 (`2.5s – 4.0s`):** Board snaps into its final layout with a subtle camera pulse. Banner switches to `MEMORIZE! 1.5s` in Snap Yellow `#FFFC00` with a rapid depletion bar.
 * **Phase 3 (`4.0s`):** Tiles wave-flip face-down, a punchy `"GO!"` text flashes over `0.3s`, and the In-Game HUD activates.
 
 ---
@@ -107,9 +107,9 @@ Designed for zero visual clutter so the player's peripheral vision stays locked 
 |              [ SOLID MODE ]           | <-- Mode Indicator Badge
 |                                       |
 |       +-----------------------+       |
-|       |  [?]  [?]  [✓]  [?]   |       |
+|       |  [?]  [?]  [X]  [?]   |       |
 |       |                       |       |
-|       |  [?]  [✓]  [?]  [?]   |       | <-- 3D 4x4 Grid
+|       |  [?]  [X]  [?]  [?]   |       | <-- 3D 4x4 Grid
 |       |                       |       |     (Occupies 65% Height)
 |       |  [?]  [?]  [?]  [?]   |       |
 |       |                       |       |
@@ -117,10 +117,10 @@ Designed for zero visual clutter so the player's peripheral vision stays locked 
 |       +-----------------------+       |
 |                                       |
 |  +---------------------------------+  |
-|  | 🔥 3x STREAK (+750 PTS)         |  | <-- Dynamic Streak Bar
+|  | [Flame] 3x STREAK (+750 PTS)    |  | <-- Dynamic Streak Bar
 |  +---------------------------------+  |
 |                                       |
-|            ( ↻ RESTART )              | <-- Quick Thumb Reset Pill
+|            ( RESTART )                | <-- Quick Thumb Reset Pill
 |                                       |
 +---------------------------------------+
 ```
@@ -128,12 +128,12 @@ Designed for zero visual clutter so the player's peripheral vision stays locked 
 * **Pod 1 — Live Bitmoji Spectator (Top Left):** Displays the player's Bitmoji avatar (or fallback). Glows Cyan when `streak >= 2` and pulses Crimson when `timer <= 10.0s`.
 * **Pod 2 — Precision Countdown Timer (Top Center):** `64px` tabular bold font displaying tenths of a second (`48.6`). Pulses crimson at `10.0s`.
 * **Pod 3 — Flip Efficiency Counter (Top Right):** Displays total individual tile taps (`FLIPS: 12`).
-* **Bottom Controls:** Dynamic streak meter and quick `↻ RESTART` pill that immediately restarts a fresh shuffle.
+* **Bottom Controls:** Dynamic streak meter and quick `RESTART` pill that immediately restarts a fresh shuffle.
 
 ---
 
 ### Screen 4: Tile Skin Drawer (Modal Bottom Sheet)
-Opened from the Lobby (`🎨 TILE SKIN`). Slides up over the bottom `45%` of the screen while keeping the 3D board visible above so tapping an emblem previews it live on the tiles:
+Opened from the Lobby (`TILE SKIN`). Slides up over the bottom `45%` of the screen while keeping the 3D board visible above so tapping an emblem previews it live on the tiles:
 
 ```text
 +---------------------------------------+
@@ -144,7 +144,7 @@ Opened from the Lobby (`🎨 TILE SKIN`). Slides up over the bottom `45%` of the
 |  +--------+ +--------+ +--------+ +--------+
 |  | [Snap] | | [Prism]| | [Gold] | |[Bitmoji|
 |  |Classic | | 5 Wins | |≤18 Flip| |10W/≤16F|
-|  |ACTIVE ✓| | EQUIP  | |  🔒    | |  🔒    |
+|  |EQUIPPED| | EQUIP  | | LOCKED | | LOCKED |
 |  +--------+ +--------+ +--------+ +--------+
 |                                       |
 |  Selected: Classic Snap Emblem        |
@@ -153,36 +153,40 @@ Opened from the Lobby (`🎨 TILE SKIN`). Slides up over the bottom `45%` of the
 
 ---
 
-### Screen 5: Post-Game "Flex Card" & Victory Receipt
-When the 8th pair is matched (or time expires), an arcade receipt card animates into the center:
+### Screen 5: Post-Game 3D Celebration Flex Card
+When the 8th pair is matched (or time expires), a rich celebration card animates into the center:
 
 ```text
 +---------------------------------------+
 |                                       |
-|    +-----------------------------+    |
-|    |    ★ BOARD CLEARED! ★       |    |
-|    |                             |    |
-|    |      [Bitmoji Victory]      |    | <-- Large 2D Bitmoji Pose
-|    |                             |    |
-|    |        FINAL SCORE          |    |
-|    |          7,620              |    | <-- Animated Count-Up
-|    |     🏆 NEW PERSONAL BEST!   |    | <-- Shown if > highScore
-|    |                             |    |
-|    |  -------------------------  |    |
-|    |  ⏱ TIME LEFT (34.2s) +3,420 |    |
-|    |  🎯 FLIPS (18 Flips) +2,200 |    |
-|    |  🔥 STREAK BONUS     +2,000 |    |
-|    |  -------------------------  |    |
-|    |  🔓 UNLOCKED: 24K GOLD FOIL!|    | <-- Milestone Toast (if earned)
-|    +-----------------------------+    |
+|    [*]    B O A R D    [*]            | <-- 3D Golden Arcade Header
+|        C L E A R E D !                |
 |                                       |
-|    +-----------------------------+    |
-|    |      P L A Y  A G A I N     |    | <-- Primary Snap Yellow CTA
-|    +-----------------------------+    |
-|    |  🏆 VIEW FRIEND LEADERBOARD |    | <-- Calls leaderboards.show()
-|    +-----------------------------+    |
-|    |       BACK TO LOBBY         |    | <-- Returns to welcome screen
-|    +-----------------------------+    |
+|        +-----------------+            |
+|        | [Gold Rim Ring] |            | <-- Medallion Avatar Frame
+|        | [Bitmoji Winner]|            |     (Overlaps Card Top Rim)
+|   +----+-----------------+----+       |
+|   |                           |       |
+|   |        FINAL SCORE        |       | <-- Neon Cyan Uppercase
+|   |           4,832           |       | <-- 52px Glowing Number
+|   |    NEW PERSONAL BEST!     |       | <-- Pill Badge (if earned)
+|   |                           |       |
+|   |   [Retro Cyan 3D Grid]    |       | <-- Synthwave Floor Graphic
+|   |                           |       |
+|   | [Time]   Time Left    +2,332 pts  |
+|   | [Target] Flips Eff.       +0 pts  | <-- Stats Breakdown Rows
+|   | [Flame]  Streak Bonus +2,500 pts  |     (Vector SVG Icons)
+|   |                           |       |
+|   |  UNLOCKED: 24K GOLD FOIL! |       | <-- Milestone Toast (if earned)
+|   +---------------------------+       |
+|                                       |
+|   \ \ \ +-----------------+ / / /     |
+|   - - - |  PLAY AGAIN ▶   | - - -     | <-- Glossy 3D Yellow Capsule CTA
+|   / / / +-----------------+ \ \ \     |     (With Flanking Ray Bursts)
+|                                       |
+|   < [Trophy] VIEW FRIEND LEADERBOARD >| <-- Glossy Royal Blue Capsule CTA
+|                                       |
+|             BACK TO LOBBY             | <-- Cyan Secondary Text Link
 +---------------------------------------+
 ```
 
