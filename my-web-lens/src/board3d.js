@@ -1,7 +1,7 @@
 // src/board3d.js
 // PlayCanvas 3D Board & Tile Architecture for Color Flip
 import * as pc from 'playcanvas';
-import { getSwatchTexture, getEmblemTexture, shadeHex } from './textures.js';
+import { getSwatchTexture, getEmblemTexture, getPlayTrayTexture, shadeHex } from './textures.js';
 import { LEVELS, SOLID_SWATCHES, generateBoardPairs } from './palette.js';
 
 export class Board3D {
@@ -25,7 +25,7 @@ export class Board3D {
     // Camera target angles tuned for 9:16 portrait mobile
     this.cameraPresets = {
       preview: { pos: new pc.Vec3(0, 6.3, 4.6), rot: new pc.Vec3(-53, 0, 0) },
-      play: { pos: new pc.Vec3(0, 7.4, 0.45), rot: new pc.Vec3(-86, 0, 0) },
+      play: { pos: new pc.Vec3(0, 6.9, 2.5), rot: new pc.Vec3(-70, 0, 0) },
     };
     this.currentCamMode = 'preview';
 
@@ -45,21 +45,31 @@ export class Board3D {
       window.app = this.app;
     }
 
-    // Use FILLMODE_NONE so CSS controls canvas dimensions within #lens-stage
-    this.app.setCanvasFillMode(pc.FILLMODE_NONE);
-    this.app.setCanvasResolution(pc.RESOLUTION_AUTO);
+    // CSS owns the layout. Application.resizeCanvas writes inline pixel sizes,
+    // which freeze the canvas at its previous lobby / viewport dimensions.
     this.app.graphicsDevice.maxPixelRatio = Math.min(window.devicePixelRatio || 1, 2);
-
     const handleResize = () => {
       if (!this.app || !this.canvas) return;
-      const rect = this.canvas.getBoundingClientRect();
-      if (rect.width > 0 && rect.height > 0) {
-        this.app.resizeCanvas(rect.width, rect.height);
+      const { width, height } = this.canvas.getBoundingClientRect();
+      if (width > 0 && height > 0) {
+        this.app.graphicsDevice.maxPixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+        this.app.graphicsDevice.resizeCanvas(width, height);
+        this.app.graphicsDevice.updateClientRect();
       }
     };
 
+    // Observe CSS changes as well as mobile browser chrome / orientation changes.
+    const resizeObserver = new ResizeObserver(handleResize);
+    resizeObserver.observe(this.canvas);
     window.addEventListener('resize', handleResize);
-    requestAnimationFrame(handleResize);
+    window.visualViewport?.addEventListener('resize', handleResize);
+    const resizeFrame = requestAnimationFrame(handleResize);
+    this.app.on('destroy', () => {
+      resizeObserver.disconnect();
+      cancelAnimationFrame(resizeFrame);
+      window.removeEventListener('resize', handleResize);
+      window.visualViewport?.removeEventListener('resize', handleResize);
+    });
 
     this.setupScene();
     this.setupInput();
@@ -111,43 +121,21 @@ export class Board3D {
     this.boardEntity.setLocalPosition(0, this.boardBaseY, 0);
     root.addChild(this.boardEntity);
 
-    // 5. Tray Base (dark navy glass pedestal underneath tiles)
-    this.trayEntity = new pc.Entity('TrayBase');
-    this.trayEntity.addComponent('render', { type: 'box' });
-    this.trayEntity.setLocalScale(3.92, 0.2, 3.92);
-    this.trayEntity.setLocalPosition(0, -0.2, 0);
+    // Shared rounded neon frame follows the board's lobby sway and gameplay pose.
+    this.trayEntity = new pc.Entity('BoardTray');
+    this.trayEntity.addComponent('render', { type: 'plane' });
+    this.trayEntity.setLocalScale(4.06, 1, 4.18);
+    this.trayEntity.setLocalPosition(0, -0.1, 0);
+    const playTrayMat = new pc.StandardMaterial();
+    playTrayMat.diffuse.set(0, 0, 0);
+    playTrayMat.emissive.set(1, 1, 1);
+    playTrayMat.emissiveMap = getPlayTrayTexture(this.app);
+    playTrayMat.opacityMap = playTrayMat.emissiveMap;
+    playTrayMat.opacityMapChannel = 'a';
+    playTrayMat.alphaTest = 0.5;
+    playTrayMat.update();
+    this.trayEntity.render.meshInstances[0].material = playTrayMat;
     this.boardEntity.addChild(this.trayEntity);
-
-    // 5b. Glowing neon rim (slightly larger slab under the tray + edge strips)
-    this.rimMat = new pc.StandardMaterial();
-    this.rimMat.diffuse = new pc.Color(0.05, 0.1, 0.25);
-    this.rimMat.emissive = new pc.Color(0.24, 0.55, 1.0);
-    this.rimMat.emissiveIntensity = 1.4;
-    this.rimMat.update();
-
-    const rimBase = new pc.Entity('TrayRim');
-    rimBase.addComponent('render', { type: 'box' });
-    rimBase.setLocalScale(4.06, 0.08, 4.06);
-    rimBase.setLocalPosition(0, -0.31, 0);
-    rimBase.render.meshInstances[0].material = this.rimMat;
-    this.boardEntity.addChild(rimBase);
-
-    const stripY = -0.095;
-    const half = 1.96;
-    const strips = [
-      { pos: [0, stripY, -half], scale: [3.96, 0.03, 0.04] },
-      { pos: [0, stripY, half], scale: [3.96, 0.03, 0.04] },
-      { pos: [-half, stripY, 0], scale: [0.04, 0.03, 3.96] },
-      { pos: [half, stripY, 0], scale: [0.04, 0.03, 3.96] },
-    ];
-    strips.forEach((s, i) => {
-      const strip = new pc.Entity(`RimStrip_${i}`);
-      strip.addComponent('render', { type: 'box' });
-      strip.setLocalPosition(...s.pos);
-      strip.setLocalScale(...s.scale);
-      strip.render.meshInstances[0].material = this.rimMat;
-      this.boardEntity.addChild(strip);
-    });
 
     // 6. Build 4x4 Tiles Grid (16 tiles)
     this.buildGrid();
@@ -338,7 +326,6 @@ export class Board3D {
 
   applyLevelStyle(levelId = 1) {
     this.activeLevelId = 1;
-    const lvl = LEVELS[0];
 
     // 1. Transparent clear so the CSS neon stage backdrop is visible
     this.cameraEntity.camera.clearColor = new pc.Color(0, 0, 0, 0);
@@ -346,20 +333,6 @@ export class Board3D {
     this.app.scene.ambientColor = new pc.Color(0.42, 0.45, 0.62);
     this.lightEntity.light.color = new pc.Color(1, 1, 1);
     this.lightEntity.light.intensity = 1.35;
-
-    // 2. Tray material (glossy dark navy glass)
-    const trayMat = this.trayEntity.render.meshInstances[0].material;
-    trayMat.diffuse = new pc.Color().fromString(lvl.trayColor);
-    trayMat.useMetalness = true;
-    trayMat.metalness = 0.35;
-    trayMat.gloss = 0.82;
-    trayMat.update();
-
-    // 3. Rim glow colour
-    if (this.rimMat && lvl.trayRimColor) {
-      this.rimMat.emissive = new pc.Color().fromString(lvl.trayRimColor);
-      this.rimMat.update();
-    }
 
     // 4. Lobby showcase: 8 matching pairs randomly shuffled across the 16 tiles
     this.setLobbyTint(true);

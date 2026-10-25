@@ -126,20 +126,25 @@ function drawEmblemCanvas(ctx, width, height, skinId, bitmojiImageElement) {
 
   // Base: deep navy rounded tile back with a lighter raised face
   roundRectPath(ctx, pad, pad, width - pad * 2, height - pad * 2, radius);
-  ctx.fillStyle = '#0B1030';
+  const edge = ctx.createLinearGradient(0, 0, width, height);
+  edge.addColorStop(0, '#4259df');
+  edge.addColorStop(0.55, '#008aff');
+  edge.addColorStop(1, '#a020ff');
+  ctx.fillStyle = edge;
   ctx.fill();
 
   const inset = 12;
   roundRectPath(ctx, inset, inset - 4, width - inset * 2, height - inset * 2 - 4, radius - 8);
   const backGrad = ctx.createLinearGradient(0, 0, 0, height);
-  backGrad.addColorStop(0, '#26337A');
-  backGrad.addColorStop(1, '#151C4A');
+  backGrad.addColorStop(0, '#485cd4');
+  backGrad.addColorStop(0.45, '#2537a2');
+  backGrad.addColorStop(1, '#101965');
   ctx.fillStyle = backGrad;
   ctx.fill();
 
   // Neon inner outline
   roundRectPath(ctx, inset + 2, inset - 2, width - inset * 2 - 4, height - inset * 2 - 8, radius - 10);
-  ctx.strokeStyle = 'rgba(110, 165, 255, 0.45)';
+  ctx.strokeStyle = 'rgba(164, 185, 255, 0.8)';
   ctx.lineWidth = 3;
   ctx.stroke();
 
@@ -147,7 +152,7 @@ function drawEmblemCanvas(ctx, width, height, skinId, bitmojiImageElement) {
   const cy = height / 2 - 2;
 
   // Default: Classic Snap Ghost Emblem
-  ctx.fillStyle = 'rgba(255, 252, 0, 0.15)';
+  ctx.fillStyle = 'rgba(255, 252, 0, 0.025)';
   ctx.beginPath();
   ctx.arc(cx, cy, 64, 0, Math.PI * 2);
   ctx.fill();
@@ -211,5 +216,31 @@ export function getEmblemTexture(app, skinId = 0, bitmojiImg = null) {
   texture.upload();
 
   textureCache.set(cacheKey, texture);
+  return texture;
+}
+
+/** Rounded gameplay pedestal, with the bevel baked into one transparent plane. */
+export function getPlayTrayTexture(app) {
+  const canvas = document.createElement('canvas');
+  canvas.width = canvas.height = 1024;
+  const ctx = canvas.getContext('2d');
+  const rim = ctx.createLinearGradient(0, 0, 1024, 1024);
+  rim.addColorStop(0, '#00dcff');
+  rim.addColorStop(.45, '#2668ff');
+  rim.addColorStop(.72, '#00caff');
+  rim.addColorStop(1, '#e025ff');
+  roundRectPath(ctx, 12, 26, 1000, 986, 72);
+  ctx.fillStyle = '#060d36'; ctx.fill();
+  roundRectPath(ctx, 12, 12, 1000, 978, 72);
+  ctx.fillStyle = rim; ctx.fill();
+  roundRectPath(ctx, 16, 15, 992, 950, 68);
+  const face = ctx.createLinearGradient(0, 0, 1024, 1024);
+  face.addColorStop(0, '#152b75');
+  face.addColorStop(.6, '#081843');
+  face.addColorStop(1, '#221050');
+  ctx.fillStyle = face; ctx.fill();
+  ctx.strokeStyle = '#94caff'; ctx.lineWidth = 2; ctx.stroke();
+  const texture = new pc.Texture(app.graphicsDevice, { mipmaps: true });
+  texture.setSource(canvas);
   return texture;
 }

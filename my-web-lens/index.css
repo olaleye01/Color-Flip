@@ -1,5 +1,53 @@
 /* index.css - Color Flip Design System: Neon Arcade */
 
+@font-face {
+  font-family: 'Bungee';
+  src: url('/fonts/Bungee-Regular.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Changa One';
+  src: url('/fonts/ChangaOne-Regular.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Lilita One';
+  src: url('/fonts/LilitaOne-Regular.ttf') format('truetype');
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/Montserrat[wght].ttf') format('truetype');
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Rubik';
+  src: url('/fonts/Rubik[wght].ttf') format('truetype');
+  font-style: normal;
+  font-weight: 300 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Inter';
+  src: url('/fonts/Inter[opsz,wght].ttf') format('truetype');
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
 :root {
   /* Brand */
   --snap-yellow: #ffe01a;
@@ -38,6 +86,8 @@
   --accent-gold: #ffd60a;
 
   /* Typography */
+  --font-game: 'Changa One', 'Impact', fantasy;
+  --font-game-accent: 'Bungee', 'Impact', fantasy;
   --font-logo: 'Lilita One', 'Montserrat', system-ui, sans-serif;
   --font-display: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-timer: 'Rubik', 'Montserrat', monospace;
@@ -1898,8 +1948,50 @@ button:focus-visible {
 .hud-sub-badge-row { align-items: center; gap: 12px; margin-top: 14px; }
 .hud-mult-pill { background: #ffffff0a; border-color: #ffffff20; color: #cbd5e9; box-shadow: none; font-size: 9px; }
 .pairs-progress { font-size: 11px; color: #d5def0; font-variant-numeric: tabular-nums; }
-.phase-banner-toast { top: var(--top-safe-inset); padding: 22px 16px; max-width: none; width: calc(100% - 48px); box-shadow: 0 12px 30px #0004; }
-.phase-title { font-family: var(--font-body); font-size: 17px; font-weight: 900; }
+.phase-banner-toast {
+  --phase-accent: #35ddff;
+  top: var(--top-safe-inset);
+  padding: 18px 16px 14px;
+  max-width: 360px;
+  width: calc(100% - 48px);
+  border: 1px solid color-mix(in srgb, var(--phase-accent), transparent 35%);
+  border-bottom-width: 3px;
+  border-radius: 22px;
+  background: radial-gradient(ellipse at 50% 0%, #3852a955, transparent 75%), #091532ed;
+  box-shadow: inset 0 1px #ffffff26, 0 12px 30px #0006,
+    0 0 24px color-mix(in srgb, var(--phase-accent), transparent 87%);
+  pointer-events: none;
+}
+.phase-banner-toast.banner-peek { --phase-accent: #ffe35b; }
+.phase-banner-toast.banner-go { --phase-accent: #63ffb1; }
+.phase-banner-toast .phase-content { gap: 7px; text-align: center; }
+.phase-banner-toast .phase-title {
+  font-family: var(--font-game-accent);
+  font-size: clamp(14px, 4.4cqw, 20px);
+  font-weight: 400;
+  font-synthesis: none;
+  line-height: 1.2;
+  letter-spacing: .015em;
+  color: var(--phase-accent);
+  text-shadow: 0 3px 0 #02091f, 0 0 18px color-mix(in srgb, var(--phase-accent), transparent 65%);
+}
+.phase-banner-toast.banner-peek .phase-title { font-size: clamp(22px, 7cqw, 30px); }
+.phase-banner-toast.banner-go .phase-title { font-size: clamp(32px, 10cqw, 44px); }
+.phase-banner-toast .phase-bar-track { margin-top: 5px; height: 5px; background: #ffffff18; }
+.phase-banner-toast .phase-bar-fill {
+  background: var(--phase-accent);
+  box-shadow: 0 0 10px var(--phase-accent);
+}
+.banner-shuffle .phase-bar-fill {
+  background: linear-gradient(90deg, #ff55c8, #ffe35b, #35ddff, #ff55c8);
+  background-size: 200% 100%;
+  animation: phaseShuffleFlow 1.2s linear infinite;
+}
+.banner-go .phase-bar-track { display: none; }
+@keyframes phaseShuffleFlow { to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .phase-banner-toast, .banner-shuffle .phase-bar-fill { animation: none; }
+}
 #lens-stage.preparing .hud-top-bar, #lens-stage.preparing .hud-sub-badge-row { visibility: hidden; }
 #lens-stage.preparing #btn-restart { visibility: hidden; }
 .btn-restart-pill { min-height: 44px; background: var(--panel); border-color: var(--panel-border); box-shadow: none; }
@@ -2243,3 +2335,166 @@ button:focus-visible {
   transition: opacity 0.15s ease, transform 0.15s ease;
 }
 
+
+/* Compact arcade copy; title and header styles stay separate.
+   Both game faces use their natural weight without synthetic bold. */
+.best-label,
+.best-score,
+.last-score-label,
+.last-score-num,
+.sound-badge,
+.round-facts,
+.round-facts strong,
+.play-hint,
+.btn-primary-cta,
+.btn-secondary-pill,
+.loading-percent-label,
+.loading-tip-message,
+.flex-score-label,
+.flex-score-val,
+.flex-pb-pill,
+.breakdown-label,
+.pts-val,
+.detail-val,
+.flex-unlocks-box .unlock-item,
+.btn-flex-play-cta,
+.btn-flex-lobby-link,
+#hud-screen .timer-digits,
+#hud-screen .flips-digits,
+#hud-screen .pod-label,
+#hud-screen .hud-mult-pill,
+#hud-screen .pairs-progress,
+#hud-screen .streak-text,
+#hud-screen .btn-restart-pill {
+  font-family: var(--font-game);
+  font-weight: 400;
+  font-synthesis: none;
+}
+
+.best-score,
+.last-score-num,
+.btn-primary-cta,
+.btn-secondary-pill,
+.loading-percent-label,
+.flex-score-val,
+.pts-val,
+.btn-flex-play-cta,
+.btn-flex-lobby-link,
+#hud-screen .timer-digits,
+#hud-screen .flips-digits,
+#hud-screen .btn-restart-pill {
+  font-family: var(--font-game-accent);
+}
+
+/* Compact tracking keeps the chunky letters readable on narrow phones. */
+.btn-primary-cta,
+.btn-secondary-pill,
+.btn-flex-play-cta,
+.btn-flex-lobby-link {
+  letter-spacing: .025em;
+}
+
+.loading-tip-message {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Gameplay art direction: cobalt glass, luminous rims, and generous HUD spacing. */
+#lens-stage.in-game:not(.showing-results) {
+  --play-cyan: #08d9ff;
+  --play-violet: #a83cff;
+  --play-panel: linear-gradient(155deg, #192963e8, #071333f2 65%, #10265de8);
+}
+#lens-stage.in-game:not(.showing-results) .stage-backdrop {
+  background: radial-gradient(ellipse at 50% 30%, #093c9d88, transparent 48%),
+    radial-gradient(ellipse at 0% 65%, #004fff88, transparent 38%),
+    radial-gradient(ellipse at 100% 70%, #7a00e866, transparent 35%),
+    linear-gradient(160deg, #080c2b, #00132f 65%, #080d2b);
+}
+#lens-stage.in-game:not(.showing-results) .stage-backdrop::after { opacity: 0; }
+#lens-stage.in-game:not(.showing-results) .float-tile { display: block; opacity: .8; filter: blur(4px); }
+#lens-stage.in-game:not(.showing-results) .ft-yellow { display: none; }
+#lens-stage.in-game:not(.showing-results) .ft-pink { top: 8%; left: -14%; }
+#lens-stage.in-game:not(.showing-results) .ft-blue { top: -5%; right: -13%; }
+#lens-stage.in-game:not(.showing-results) .ft-purple { bottom: 2%; left: -17%; }
+#lens-stage.in-game:not(.showing-results) .ft-gold { bottom: -2%; right: -15%; }
+#lens-stage.in-game:not(.showing-results) #hud-screen { padding-inline: 9cqw; }
+#lens-stage.in-game:not(.showing-results) .hud-top-bar { display: grid; grid-template-columns: 1fr 2fr 1.05fr; gap: 2.5cqw; }
+#lens-stage.in-game:not(.showing-results) .hud-pod {
+  width: auto; height: 17cqw; min-width: 0; padding: 5px;
+  border: 1px solid #5275df; border-bottom-color: #09caff;
+  border-radius: 4.5cqw; background: var(--play-panel);
+  box-shadow: inset 0 2px 8px #668dff33, inset 0 -2px 10px #008bff22, 0 8px 24px #0003;
+}
+#lens-stage.in-game:not(.showing-results) .hud-avatar-pod {
+  position: relative; display: block; justify-self: center;
+  width: 17cqw; height: 17cqw; min-width: 0; min-height: 0;
+  aspect-ratio: 1; padding: 0; border-radius: 50%;
+  border-color: #7c71ff #187dff #00caff #ac6eff;
+  background: #071136; box-shadow: 0 0 14px #405bff88, inset 0 0 5px #697bff;
+}
+#lens-stage.in-game:not(.showing-results) .hud-avatar-pic {
+  position: absolute; inset: 5px;
+  width: calc(100% - 10px); height: calc(100% - 10px);
+  display: block; object-fit: cover; border-radius: 50%;
+  background: linear-gradient(145deg, #7454ff, #2318f0 55%, #008cff);
+  border: 1px solid #8588ff;
+}
+#lens-stage.in-game:not(.showing-results) .hud-avatar-pod.avatar-sweat { border-color: var(--accent-crimson); }
+#lens-stage.in-game:not(.showing-results) .hud-avatar-pod.avatar-glow-cyan { border-color: var(--play-cyan); }
+#lens-stage.in-game:not(.showing-results) .timer-digits { font-size: 8cqw; letter-spacing: -.035em; text-shadow: 0 2px 3px #0004; }
+#lens-stage.in-game:not(.showing-results) .flips-digits { font-size: 7.5cqw; color: #ffdc20; }
+#lens-stage.in-game:not(.showing-results) .pod-label { font-size: 2.4cqw; letter-spacing: .13em; margin-top: 5px; }
+#lens-stage.in-game:not(.showing-results) .pace-dot { width: 2.7cqw; height: 2.7cqw; border: 1px solid #ffffff66; }
+#lens-stage.in-game:not(.showing-results) .hud-sub-badge-row { gap: 3.5cqw; margin-top: 4cqw; }
+#lens-stage.in-game:not(.showing-results) .hud-mult-pill {
+  padding: 7px 17px; font-size: 2.7cqw; color: white;
+  background: linear-gradient(160deg, #103b91, #071c55);
+  border: 1px solid #009fff; box-shadow: inset 0 0 10px #008cff66, 0 0 10px #006eff33;
+}
+#lens-stage.in-game:not(.showing-results) .pairs-progress { font-size: 3.1cqw; color: #c0cef5; }
+#lens-stage.in-game:not(.showing-results) .hud-bottom-actions { position: relative; margin-bottom: 1.5cqh; }
+#lens-stage.in-game:not(.showing-results) .btn-restart-pill {
+  justify-content: center; width: 40cqw; min-height: 48px; height: 11cqw;
+  font-size: 3.2cqw; gap: 12px; border: 1px solid #587aff;
+  border-color: #6685ff #9350ff #5149ff #00cfff; background: var(--play-panel);
+  box-shadow: inset 0 2px 9px #5476ff55, 0 8px 28px #1329ad55;
+}
+#lens-stage.in-game:not(.showing-results) .btn-restart-pill svg { width: 20px; height: 20px; }
+#lens-stage.in-game:not(.showing-results) .btn-restart-pill:hover { filter: brightness(1.2); }
+#lens-stage.in-game:not(.showing-results) .dynamic-streak-bar { position: absolute; bottom: calc(100% + 16px); white-space: nowrap; }
+/* Keep one framing rule across phones, including when Safari's bars resize. */
+#lens-stage.in-game:not(.showing-results) #application-canvas {
+  width: min(100cqw, 57cqh);
+  height: min(100cqw, 57cqh);
+  top: 54%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  touch-action: none;
+}
+#lens-stage.in-game:not(.showing-results) .hud-top-bar { align-items: center; }
+#lens-stage.in-game:not(.showing-results) .hud-mult-pill,
+#lens-stage.in-game:not(.showing-results) .pairs-progress { white-space: nowrap; }
+#lens-stage.in-game:not(.showing-results) .pod-label { font-size: max(10px, 2.4cqw); }
+#lens-stage.in-game:not(.showing-results) .pairs-progress { font-size: max(12px, 3.1cqw); }
+#lens-stage.in-game:not(.showing-results) .hud-mult-pill { font-size: max(10px, 2.7cqw); }
+#lens-stage.in-game:not(.showing-results) .btn-restart-pill { min-width: 148px; font-size: max(12px, 3.2cqw); }
+
+/* The portrait game stays centered when a phone is turned sideways. */
+@media (orientation: landscape) and (max-height: 600px) {
+  #lens-stage {
+    width: min(100vw, 62.5dvh);
+    height: 100dvh;
+    max-height: none;
+    margin: 0 auto;
+    border-radius: 0;
+  }
+}
+@media (hover: none) and (pointer: coarse) and (orientation: portrait) {
+  #lens-stage {
+    height: 100dvh;
+    max-height: none;
+    margin: 0 auto;
+    border-radius: 0;
+  }
+}
