@@ -22,6 +22,19 @@ class SoundEngine {
     }
   }
 
+  suspend() {
+    if (this.ctx && this.ctx.state === 'running') {
+      this.ctx.suspend().catch(() => {});
+    }
+    this.stopShuffleSequence();
+  }
+
+  resume() {
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume().catch(() => {});
+    }
+  }
+
   playTone(freq, type, duration, gain = 0.3, pitchMult = 1.0) {
     if (this.muted) return;
     this.ensureContext();

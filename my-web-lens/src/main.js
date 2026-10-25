@@ -3,6 +3,10 @@ import { Board3D } from './board3d.js';
 import { GameEngine } from './game.js';
 import { UIController } from './ui.js';
 import { LoadingScreen } from './loading.js';
+import { sound } from './audio.js';
+
+// Suppress default context menu (fires on touch & hold in mobile webviews)
+window.addEventListener('contextmenu', (event) => event.preventDefault());
 
 window.addEventListener('DOMContentLoaded', async () => {
   console.log('Color Flip Web Lens initializing...');
@@ -84,6 +88,17 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   game.init(saveState || getSaveState());
   ui.refreshUserData();
+
+  // Snapchat lifecycle: Pause game and suspend Web Audio when webview is in background
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      sound.suspend();
+      game.pause();
+    } else {
+      sound.resume();
+      game.resume();
+    }
+  });
 
   // Developer preview mode: ?preview=victory
   if (preview === 'victory') {

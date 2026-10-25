@@ -2,7 +2,7 @@
 // Core Game Logic, State Machine, Timer, Scoring & Progression (Solid Color Memory)
 import { generateBoardPairs, LEVELS, SOLID_SWATCHES } from './palette.js';
 import { sound } from './audio.js';
-import { persistSaveState, getSaveState, submitRoundScore } from './snapchat.js';
+import { persistSaveState, getSaveState, submitRoundScore, buzz } from './snapchat.js';
 
 export const GAME_STATES = {
   LOBBY: 'LOBBY',
@@ -200,6 +200,7 @@ export class GameEngine {
 
       this.board.flipTile(tileIndex, true);
       sound.playFlip(1);
+      buzz(20);
       return;
     }
 
@@ -215,6 +216,7 @@ export class GameEngine {
 
     this.board.flipTile(secondIdx, true);
     sound.playFlip(1);
+    buzz(20);
 
     const firstTile = this.boardTiles[firstIdx];
     const secondTile = this.boardTiles[secondIdx];
@@ -234,6 +236,7 @@ export class GameEngine {
       this.board.setTileMatched(firstIdx);
       this.board.setTileMatched(secondIdx);
       sound.playMatch(1, this.currentStreak);
+      buzz(40);
 
       if (this.onStreakUpdate) {
         this.onStreakUpdate(this.currentStreak, this.streakBonusTotal);
@@ -346,6 +349,22 @@ export class GameEngine {
 
   quickRestart() {
     this.startRound();
+  }
+
+  pause() {
+    if (this.gameLoopTimer) {
+      cancelAnimationFrame(this.gameLoopTimer);
+      this.gameLoopTimer = null;
+    }
+    sound.stopShuffleSequence();
+  }
+
+  resume() {
+    if (this.state === GAME_STATES.PLAYING && !this.gameLoopTimer) {
+      // Clamp/reset timestamp to prevent catch-up delta burst on 120Hz or background return
+      this.lastTimestamp = performance.now();
+      this.startGameLoop();
+    }
   }
 
   returnToLobby() {

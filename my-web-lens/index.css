@@ -114,6 +114,8 @@ body {
   width: 100%;
   height: 100%;
   overflow: hidden;
+  touch-action: none;
+  overscroll-behavior: none;
   background: radial-gradient(ellipse at 50% 20%, #141c52 0%, #05071a 70%);
   color: var(--text-primary);
   font-family: var(--font-body);
