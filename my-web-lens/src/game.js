@@ -4,6 +4,8 @@ import { generateBoardPairs, LEVELS, SOLID_SWATCHES } from './palette.js';
 import { sound } from './audio.js';
 import { persistSaveState, getSaveState, submitRoundScore, buzz } from './snapchat.js';
 
+const ROUND_END_HOLD_MS = 1500;
+
 export const GAME_STATES = {
   LOBBY: 'LOBBY',
   SHUFFLE: 'SHUFFLE',
@@ -77,7 +79,7 @@ export class GameEngine {
    * 4. 60.0s Timer start
    */
   startRound() {
-    if (this.gameLoopTimer) cancelAnimationFrame(this.gameLoopTimer);
+    this.stopGameLoop();
     sound.stopShuffleSequence();
 
     // Reset round metrics
@@ -188,6 +190,13 @@ export class GameEngine {
     this.gameLoopTimer = requestAnimationFrame(loop);
   }
 
+  stopGameLoop() {
+    if (this.gameLoopTimer !== null) {
+      cancelAnimationFrame(this.gameLoopTimer);
+      this.gameLoopTimer = null;
+    }
+  }
+
   handleTileTap(tileIndex) {
     if (this.state !== GAME_STATES.PLAYING || this.isProcessingTurn) return;
 
@@ -272,11 +281,7 @@ export class GameEngine {
   }
 
   handleVictory() {
-    this.setState(GAME_STATES.VICTORY);
-    this.board.isInputLocked = true;
-    if (this.gameLoopTimer) cancelAnimationFrame(this.gameLoopTimer);
-
-    sound.playVictory(1);
+    if (this.state !== GAME_STATES.PLAYING) return;
 
     // Calculate Final Score per mental model formula
     const timeBonus = Math.round(this.timeLeft * 100); // 0.1s precision
@@ -304,49 +309,69 @@ export class GameEngine {
       equippedSkin: this.equippedSkinId,
     };
 
-    // Persist and submit score to Snapchat Leaderboard
+    this.finishRound({
+      status: GAME_STATES.VICTORY,
+      levelName: 'Solid',
+      finalScore,
+      isNewHighScore,
+      timeBonus,
+      timeLeft: this.timeLeft,
+      flipBonus,
+      flipsCount: this.flipsCount,
+      streakBonus,
+      multiplier: 1.0,
+      newUnlocks,
+    });
+
+    sound.playVictory(1);
     persistSaveState(updatedSave);
     submitRoundScore(finalScore).catch(() => {});
-
-    if (this.onRoundEnd) {
-      this.onRoundEnd({
-        status: 'VICTORY',
-        levelName: 'Solid',
-        finalScore,
-        isNewHighScore,
-        timeBonus,
-        timeLeft: this.timeLeft,
-        flipBonus,
-        flipsCount: this.flipsCount,
-        streakBonus,
-        multiplier: 1.0,
-        newUnlocks,
-      });
-    }
   }
 
   handleTimeUp() {
-    this.setState(GAME_STATES.TIME_UP);
-    this.board.isInputLocked = true;
-    if (this.gameLoopTimer) cancelAnimationFrame(this.gameLoopTimer);
+    if (this.state !== GAME_STATES.PLAYING) return;
+
+    this.finishRound({
+      status: GAME_STATES.TIME_UP,
+      levelName: 'Solid',
+      finalScore: 0,
+      isNewHighScore: false,
+      timeBonus: 0,
+      timeLeft: 0,
+      flipBonus: 0,
+      flipsCount: this.flipsCount,
+      streakBonus: 0,
+      multiplier: 0,
+      newUnlocks: [],
+    });
 
     sound.playMismatch(1);
+  }
 
-    if (this.onRoundEnd) {
-      this.onRoundEnd({
-        status: 'TIME_UP',
-        levelName: 'Solid',
-        finalScore: 0,
-        isNewHighScore: false,
-        timeBonus: 0,
-        timeLeft: 0,
-        flipBonus: 0,
-        flipsCount: this.flipsCount,
-        streakBonus: 0,
-        multiplier: 0,
-        newUnlocks: [],
-      });
-    }
+  finishRound(result) {
+    this.stopGameLoop();
+    this.board.isInputLocked = true;
+    this.setState(result.status);
+
+    // Keep rendering the board during the hold and count only foreground time.
+    let remainingMs = ROUND_END_HOLD_MS;
+    this.lastTimestamp = performance.now();
+    const hold = (timestamp) => {
+      this.gameLoopTimer = null;
+      if (this.state !== result.status) return;
+
+      if (!document.hidden) {
+        remainingMs -= Math.max(0, timestamp - this.lastTimestamp);
+      }
+      this.lastTimestamp = timestamp;
+
+      if (remainingMs > 0) {
+        this.gameLoopTimer = requestAnimationFrame(hold);
+      } else {
+        this.onRoundEnd?.(result);
+      }
+    };
+    this.gameLoopTimer = requestAnimationFrame(hold);
   }
 
   quickRestart() {
@@ -358,15 +383,16 @@ export class GameEngine {
     if (this.state !== GAME_STATES.PLAYING || this.isPaused) return false;
     this.isPaused = true;
     this.board.isInputLocked = true;
-    if (this.gameLoopTimer) {
-      cancelAnimationFrame(this.gameLoopTimer);
-      this.gameLoopTimer = null;
-    }
+    this.stopGameLoop();
     sound.stopShuffleSequence();
     return true;
   }
 
   resume() {
+    if (this.state === GAME_STATES.VICTORY || this.state === GAME_STATES.TIME_UP) {
+      // The Lens may have been hidden between frames during the result hold.
+      this.lastTimestamp = performance.now();
+    }
     if (!this.isPaused) return false;
     this.isPaused = false;
     if (this.state === GAME_STATES.PLAYING) {
@@ -382,7 +408,7 @@ export class GameEngine {
 
   returnToLobby() {
     this.isPaused = false;
-    if (this.gameLoopTimer) cancelAnimationFrame(this.gameLoopTimer);
+    this.stopGameLoop();
     sound.stopShuffleSequence();
 
     this.board.setCameraPreset('preview', 4.0);

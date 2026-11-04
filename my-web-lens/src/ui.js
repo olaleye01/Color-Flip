@@ -356,6 +356,8 @@ export class UIController {
       this.closePauseMenu(false);
     }
 
+    this.hudScreen.inert = state === GAME_STATES.VICTORY || state === GAME_STATES.TIME_UP;
+
     if (this.stage) {
       this.stage.classList.toggle('in-game', state !== GAME_STATES.LOBBY);
       this.stage.classList.toggle('preparing', [GAME_STATES.SHUFFLE, GAME_STATES.PEEK, GAME_STATES.CASCADE].includes(state));
@@ -419,7 +421,6 @@ export class UIController {
     this.lobbyScreen.inert = true;
     this.hudScreen.inert = true;
     this.flexModal.classList.remove('hidden');
-    this.btnFlexPlayAgain.focus();
     this.flexModalOverlay.classList.remove('hidden');
 
     if (payload.status === 'VICTORY') {
@@ -488,6 +489,7 @@ export class UIController {
       }
       this.flexUnlocks.classList.add('hidden');
     }
+    this.flexModal.focus({ preventScroll: true });
   }
 
   closeFlexCard() {
