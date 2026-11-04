@@ -1,6 +1,6 @@
 // src/game.js
 // Core Game Logic, State Machine, Timer, Scoring & Progression (Solid Color Memory)
-import { generateBoardPairs, LEVELS, SOLID_SWATCHES } from './palette.js';
+import { generateBoardPairs, SOLID_SWATCHES } from './palette.js';
 import { sound } from './audio.js';
 import { persistSaveState, getSaveState, submitRoundScore, buzz } from './snapchat.js';
 
@@ -53,8 +53,9 @@ export class GameEngine {
 
   init(saveState) {
     this.equippedSkinId = saveState.equippedSkin || 0;
-    this.board.applyLevelStyle(1);
-    this.board.applySkin(this.equippedSkinId);
+    if (this.board.activeSkinId !== this.equippedSkinId) {
+      this.board.applySkin(this.equippedSkinId);
+    }
     this.setState(GAME_STATES.LOBBY);
   }
 
@@ -272,7 +273,9 @@ export class GameEngine {
       this.board.shakeTile(secondIdx);
 
       // Flip back after 0.65-second delay
+      const roundTiles = this.boardTiles;
       setTimeout(() => {
+        if (this.boardTiles !== roundTiles || this.state === GAME_STATES.LOBBY) return;
         this.board.flipTile(firstIdx, false);
         this.board.flipTile(secondIdx, false);
         this.isProcessingTurn = false;

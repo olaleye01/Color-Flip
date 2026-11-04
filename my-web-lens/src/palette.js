@@ -32,6 +32,14 @@ export const SOLID_SWATCHES = [
   { id: 's12', name: 'Pure Titanium', type: 'solid', colorA: '#ECEFF1' },
 ];
 
+// Fixed welcome board, listed left to right in each row.
+export const WELCOME_SWATCHES = [
+  0, 3, 5, 7,
+  4, 1, 6, 2,
+  6, 2, 4, 1,
+  5, 7, 0, 3,
+].map((index) => SOLID_SWATCHES[index]);
+
 // Cosmetic Tile Back Emblem (Default Classic Snap)
 export const EMBLEM_SKINS = [
   {

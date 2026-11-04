@@ -368,6 +368,7 @@ export class UIController {
       this.hudScreen.classList.add('hidden');
       this.phaseBanner.classList.add('hidden');
       this.refreshUserData();
+      this.btnPlay.disabled = false;
     } else if (state === GAME_STATES.SHUFFLE || state === GAME_STATES.PEEK || state === GAME_STATES.CASCADE) {
       this.lobbyScreen.classList.add('hidden');
       this.hudScreen.classList.remove('hidden');
